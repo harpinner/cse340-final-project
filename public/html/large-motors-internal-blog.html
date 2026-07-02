@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Large Motors — Internal Blog</title>
+<style>
+  :root{
+    --lot-yellow:#f2c518;
+    --lot-yellow-dark:#c99e0d;
+    --flag-red:#c0392b;
+    --flag-blue:#1c4e80;
+    --asphalt:#2b2b28;
+    --asphalt-light:#3d3d38;
+    --paper:#f4ecd8;
+    --rust:#8a5a2b;
+    --ink:#1f1c15;
+    --ok-green:#4c7a3d;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:var(--asphalt);
+    color:var(--paper);
+    font-family:'Arial Narrow', Arial, sans-serif;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 40px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 40px);
+  }
+
+  .bunting{
+    height:28px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--flag-red) 0px, var(--flag-red) 24px,
+      var(--lot-yellow) 24px, var(--lot-yellow) 48px,
+      var(--flag-blue) 48px, var(--flag-blue) 72px
+    );
+    border-bottom:4px dashed var(--paper);
+  }
+
+  header{
+    background:var(--lot-yellow);
+    color:var(--ink);
+    padding:18px 20px;
+    text-align:center;
+    border-bottom:6px solid var(--flag-red);
+  }
+
+  .logo{
+    font-family:'Impact','Arial Black',sans-serif;
+    font-size:clamp(1.8rem, 5vw, 2.8rem);
+    letter-spacing:1px;
+    margin:0;
+    transform:skew(-6deg);
+    text-shadow: 2px 2px 0 var(--flag-red), 4px 4px 0 var(--flag-blue);
+  }
+
+  header p{
+    margin:8px 0 0;
+    font-weight:bold;
+    font-size:0.85rem;
+    letter-spacing:1px;
+  }
+
+  .badge-office{
+    display:inline-block;
+    background:var(--ink);
+    color:var(--lot-yellow);
+    padding:2px 10px;
+    border-radius:3px;
+    font-size:0.7rem;
+    letter-spacing:2px;
+    margin-top:8px;
+  }
+
+  main{
+    max-width:960px;
+    margin:0 auto;
+    padding:28px 18px 60px;
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+  }
+
+  .toolbar h2{
+    font-family:'Impact','Arial Black',sans-serif;
+    font-size:1.6rem;
+    color:var(--lot-yellow);
+    margin:0;
+    letter-spacing:1px;
+  }
+
+  .toolbar .sub{
+    font-size:0.8rem;
+    color:#a89f8a;
+    margin-top:4px;
+  }
+
+  button.new-post-btn{
+    font-family:'Impact','Arial Black',sans-serif;
+    letter-spacing:1px;
+    background:var(--flag-red);
+    color:white;
+    border:3px solid var(--ink);
+    border-radius:4px;
+    padding:10px 20px;
+    font-size:0.9rem;
+    cursor:pointer;
+    box-shadow:0 4px 0 rgba(0,0,0,0.35);
+    white-space:nowrap;
+  }
+
+  button.new-post-btn:hover{ background:#a5301f; }
+
+  .filter-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+
+  .tag-btn{
+    background:var(--asphalt-light);
+    color:var(--paper);
+    border:1px solid var(--lot-yellow-dark);
+    border-radius:14px;
+    padding:5px 13px;
+    font-size:0.75rem;
+    cursor:pointer;
+    font-family:inherit;
+  }
+
+  .tag-btn.active{
+    background:var(--lot-yellow);
+    color:var(--ink);
+    font-weight:bold;
+  }
+
+  /* New post panel */
+  .new-post-panel{
+    display:none;
+    background:var(--asphalt-light);
+    border:2px solid var(--lot-yellow-dark);
+    border-radius:6px;
+    padding:22px;
+    margin-bottom:30px;
+  }
+
+  .new-post-panel.show{ display:block; }
+
+  .new-post-panel h3{
+    font-family:'Impact','Arial Black',sans-serif;
+    color:var(--lot-yellow);
+    margin:0 0 14px;
+    font-size:1.15rem;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-bottom:14px;
+  }
+
+  .field label{
+    font-size:0.78rem;
+    font-weight:bold;
+    color:var(--lot-yellow);
+  }
+
+  .field input, .field select, .field textarea{
+    background:var(--paper);
+    color:var(--ink);
+    border:2px solid var(--ink);
+    border-radius:3px;
+    padding:9px 10px;
+    font-family:inherit;
+    font-size:0.9rem;
+  }
+
+  .field textarea{ min-height:110px; resize:vertical; }
+
+  .form-actions{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+
+  button.publish-btn{
+    font-family:'Impact','Arial Black',sans-serif;
+    letter-spacing:1px;
+    background:var(--flag-blue);
+    color:white;
+    border:3px solid var(--ink);
+    border-radius:4px;
+    padding:10px 22px;
+    font-size:0.9rem;
+    cursor:pointer;
+    box-shadow:0 4px 0 rgba(0,0,0,0.35);
+  }
+
+  button.publish-btn:hover{ background:#153f66; }
+
+  button.cancel-btn{
+    background:none;
+    border:2px dashed var(--lot-yellow-dark);
+    color:var(--paper);
+    border-radius:4px;
+    padding:9px 16px;
+    font-family:inherit;
+    font-size:0.85rem;
+    cursor:pointer;
+  }
+
+  /* Post list */
+  .post-list{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  .post-card{
+    background:var(--paper);
+    color:var(--ink);
+    border:2px solid var(--ink);
+    border-radius:5px;
+    padding:18px 20px;
+    cursor:pointer;
+  }
+
+  .post-card:hover{
+    background:#ece2c6;
+  }
+
+  .post-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:6px;
+  }
+
+  .post-tags{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+
+  .post-tag{
+    font-size:0.68rem;
+    font-weight:bold;
+    padding:2px 8px;
+    border-radius:10px;
+    background:#dbe3ec;
+    color:var(--flag-blue);
+  }
+
+  .post-tag.ops{ background:#f6e2b0; color:var(--rust); }
+  .post-tag.legal{ background:#f2d4d0; color:var(--flag-red); }
+  .post-tag.morale{ background:#dcecd4; color:var(--ok-green); }
+
+  .post-date{
+    font-size:0.72rem;
+    color:#7a7261;
+  }
+
+  .post-title{
+    font-family:'Impact','Arial Black',sans-serif;
+    font-size:1.25rem;
+    margin:4px 0 6px;
+    letter-spacing:0.5px;
+  }
+
+  .post-author{
+    font-size:0.78rem;
+    color:#5a5548;
+    margin-bottom:8px;
+  }
+
+  .post-excerpt{
+    font-size:0.88rem;
+    line-height:1.5;
+    color:#3a3628;
+  }
+
+  .post-full{
+    display:none;
+    font-size:0.88rem;
+    line-height:1.6;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px dashed #b8ac8a;
+    white-space:pre-line;
+  }
+
+  .post-card.expanded .post-full{ display:block; }
+  .post-card.expanded .post-excerpt{ display:none; }
+
+  .read-more{
+    font-size:0.75rem;
+    color:var(--flag-blue);
+    font-weight:bold;
+    margin-top:8px;
+    display:inline-block;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:30px;
+    color:#a89f8a;
+    font-style:italic;
+  }
+
+  footer{
+    text-align:center;
+    padding:20px;
+    font-size:0.72rem;
+    color:#a89f8a;
+    border-top:4px dashed var(--lot-yellow-dark);
+    margin-top:30px;
+  }
+</style>
+</head>
+<body>
+
+<div class="bunting"></div>
+
+<header>
+  <div class="logo">LARGE MOTORS</div>
+  <p>Internal Blog — Staff Eyes Only</p>
+  <span class="badge-office">DO NOT FORWARD EXTERNALLY</span>
+</header>
+
+<main>
+
+  <div class="toolbar">
+    <div>
+      <h2>Team Updates</h2>
+      <div class="sub">Memos, lot notes, and morale-adjacent announcements.</div>
+    </div>
+    <button class="new-post-btn" id="toggle-new-post">+ New Post</button>
+  </div>
+
+  <div class="new-post-panel" id="new-post-panel">
+    <h3>New Internal Post</h3>
+    <form id="post-form">
+      <div class="field">
+        <label for="p-title">Title</label>
+        <input type="text" id="p-title" required>
+      </div>
+      <div class="field">
+        <label for="p-author">Posted By</label>
+        <input type="text" id="p-author" required>
+      </div>
+      <div class="field">
+        <label for="p-tag">Category</label>
+        <select id="p-tag">
+          <option value="ops">Ops</option>
+          <option value="legal">Legal-ish</option>
+          <option value="morale">Morale</option>
+          <option value="general">General</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="p-body">Post</label>
+        <textarea id="p-body" required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="publish-btn">Publish to Team</button>
+        <button type="button" class="cancel-btn" id="cancel-post">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="filter-row" id="filter-row">
+    <button class="tag-btn active" data-tag="all">All Posts</button>
+    <button class="tag-btn" data-tag="ops">Ops</button>
+    <button class="tag-btn" data-tag="legal">Legal-ish</button>
+    <button class="tag-btn" data-tag="morale">Morale</button>
+    <button class="tag-btn" data-tag="general">General</button>
+  </div>
+
+  <div class="post-list" id="post-list"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">No posts in this category yet.</div>
+
+</main>
+
+<footer>
+  Internal Blog — visible to staff only. Please stop screenshotting these and sending
+  them to your cousin.
+</footer>
+
+<script>
+  const seedPosts = [
+    {
+      title: "A Reminder About the Word 'Certified'",
+      author: "Gary — Sales Floor Manager",
+      tag: "legal",
+      date: "2 days ago",
+      excerpt: "We've had some questions from the team about what 'Certified Pre-Owned' means on our signage...",
+      body: "We've had some questions from the team about what 'Certified Pre-Owned' means on our signage. To clarify: it means a certificate was, at some point, near the car. Please continue using this language freely, it tests very well with customers. If anyone from a state agency asks, direct them to me and not to Kevin."
+    },
+    {
+      title: "Lot Cleanup Before Saturday Walk-Ins",
+      author: "Denise — Ops",
+      tag: "ops",
+      date: "4 days ago",
+      excerpt: "Big walk-in crowd expected Saturday. A few housekeeping notes before doors open...",
+      body: "Big walk-in crowd expected Saturday. A few housekeeping notes before doors open:\n\n1. Move the Vandale Wagon away from the Cresthill so customers can't hear them next to each other.\n2. Re-prop the hoods that fell overnight — looks bad closed.\n3. The puddle situation under row C has been 'discussed with the mechanic' again. Just keep a mat over it.\n4. Please stop telling customers the odometer numbers are 'more of a starting offer.' It's funny but it's not landing."
+    },
+    {
+      title: "Congrats to Marcus on Q2's Top Seller!",
+      author: "Gary — Sales Floor Manager",
+      tag: "morale",
+      date: "1 week ago",
+      excerpt: "Big shoutout to Marcus for moving eleven vehicles this quarter, a company record...",
+      body: "Big shoutout to Marcus for moving eleven vehicles this quarter, a company record, including three that had been on the lot since before most of you started. Marcus, your prize is you get to take the next return call personally. Great work, team. Pizza in the break room Friday, assuming Kevin didn't eat it early again."
+    },
+    {
+      title: "Update on the Vandale Wagon Return",
+      author: "Kevin — Customer Relations",
+      tag: "legal",
+      date: "1 week ago",
+      excerpt: "Following up on the review situation from last week. We've reached an understanding...",
+      body: "Following up on the review situation from last week. We've reached an understanding with the customer and everyone involved is satisfied with the resolution. Please do not discuss the specifics of this in the break room, on the sales floor, or, per HR, 'anywhere with windows.' Thank you all for your discretion, as always."
+    },
+    {
+      title: "New Coffee Machine In The Back Office",
+      author: "Denise — Ops",
+      tag: "general",
+      date: "2 weeks ago",
+      excerpt: "The new coffee machine has arrived. A few ground rules to keep it running...",
+      body: "The new coffee machine has arrived. A few ground rules to keep it running longer than the last one: please descale it occasionally, and no, we are not using the 'lot water' from the hose out back. That's how we lost the last one. Also it's not for customers, no matter how long they've been waiting on financing."
+    }
+  ];
+
+  let posts = seedPosts.map(function(p, i){ p.id = i + 1; return p; });
+  let activeFilter = 'all';
+
+  const postList = document.getElementById('post-list');
+  const emptyState = document.getElementById('empty-state');
+  const filterRow = document.getElementById('filter-row');
+  const toggleBtn = document.getElementById('toggle-new-post');
+  const panel = document.getElementById('new-post-panel');
+  const cancelBtn = document.getElementById('cancel-post');
+  const form = document.getElementById('post-form');
+
+  const tagLabels = { ops:'Ops', legal:'Legal-ish', morale:'Morale', general:'General' };
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function render(){
+    const filtered = activeFilter === 'all'
+      ? posts
+      : posts.filter(function(p){ return p.tag === activeFilter; });
+
+    postList.innerHTML = '';
+    emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+
+    filtered.forEach(function(p){
+      const card = document.createElement('div');
+      card.className = 'post-card';
+      card.dataset.id = p.id;
+
+      card.innerHTML =
+        '<div class="post-meta">' +
+          '<div class="post-tags"><span class="post-tag ' + p.tag + '">' + tagLabels[p.tag] + '</span></div>' +
+          '<div class="post-date">' + escapeHtml(p.date) + '</div>' +
+        '</div>' +
+        '<div class="post-title">' + escapeHtml(p.title) + '</div>' +
+        '<div class="post-author">' + escapeHtml(p.author) + '</div>' +
+        '<div class="post-excerpt">' + escapeHtml(p.excerpt) + '</div>' +
+        '<div class="post-full">' + escapeHtml(p.body) + '</div>' +
+        '<span class="read-more">Click to read full post</span>';
+
+      card.addEventListener('click', function(){
+        card.classList.toggle('expanded');
+      });
+
+      postList.appendChild(card);
+    });
+  }
+
+  filterRow.addEventListener('click', function(e){
+    if(e.target.classList.contains('tag-btn')){
+      filterRow.querySelectorAll('.tag-btn').forEach(function(b){ b.classList.remove('active'); });
+      e.target.classList.add('active');
+      activeFilter = e.target.getAttribute('data-tag');
+      render();
+    }
+  });
+
+  toggleBtn.addEventListener('click', function(){
+    panel.classList.toggle('show');
+  });
+
+  cancelBtn.addEventListener('click', function(){
+    panel.classList.remove('show');
+    form.reset();
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const title = document.getElementById('p-title').value.trim();
+    const author = document.getElementById('p-author').value.trim();
+    const tag = document.getElementById('p-tag').value;
+    const body = document.getElementById('p-body').value.trim();
+
+    if(!title || !author || !body) return;
+
+    const excerpt = body.length > 110 ? body.slice(0, 110).trim() + '...' : body;
+
+    posts.unshift({
+      id: Date.now(),
+      title, author, tag, body, excerpt,
+      date: 'Just now'
+    });
+
+    form.reset();
+    panel.classList.remove('show');
+    activeFilter = 'all';
+    filterRow.querySelectorAll('.tag-btn').forEach(function(b){ b.classList.remove('active'); });
+    filterRow.querySelector('[data-tag="all"]').classList.add('active');
+    render();
+  });
+
+  render();
+</script>
+
+</body>
+</html>
