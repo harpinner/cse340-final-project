@@ -8,9 +8,16 @@ const getUserByEmail = async (email) => {
     return result.rows[0];
 };
 
-const createUser = async (email, passwordHash) => {
-    const query = 'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING *';
-    const values = [email, passwordHash];
+const getUserByUsername = async (username) => {
+    const query = 'SELECT * FROM users WHERE username = $1';
+    const values = [username];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+const createUser = async (email, passwordHash, role, username) => {
+    const query = 'INSERT INTO users (email, password_hash, role, username) VALUES ($1, $2, $3, $4) RETURNING *';
+    const values = [email, passwordHash, role, username];
     const result = await db.query(query, values);
     return result.rows[0];
 }
@@ -43,4 +50,4 @@ const getAllUsers = async () => {
     return result.rows;
 };
 
-export { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser, getAllUsers };
+export { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser, getAllUsers, getUserByUsername };
