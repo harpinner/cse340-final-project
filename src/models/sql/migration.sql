@@ -13,7 +13,7 @@
 BEGIN;
 
 CREATE TABLE vehicles (
-    vehicle_id  integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id  integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     make        text NOT NULL,
     model       text NOT NULL,
     year        integer NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE vehicles (
 );
 
 CREATE TABLE users (
-    user_id  integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id  integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username text NOT NULL UNIQUE,
     password text NOT NULL,
     role     text NOT NULL,
@@ -31,55 +31,55 @@ CREATE TABLE users (
 );
 
 CREATE TABLE categories (
-    category_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id  integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name        text NOT NULL UNIQUE,
     description text
 );
 
 CREATE TABLE reviews (
-    review_id  integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    vehicle_id integer NOT NULL REFERENCES vehicles(vehicle_id),
-    user_id    integer NOT NULL REFERENCES users(user_id),
+    id  integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    vehicle_id integer NOT NULL REFERENCES vehicles(id),
+    user_id    integer NOT NULL REFERENCES users(id),
     rating     integer NOT NULL CHECK (rating >= 1 AND rating <= 5),
     comment    text,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE blog_posts (
-    post_id    integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id    integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title      text NOT NULL,
     content    text NOT NULL,
-    author_id  integer NOT NULL REFERENCES users(user_id),
+    author_id  integer NOT NULL REFERENCES users(id),
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE blog_comments (
-    comment_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    post_id    integer NOT NULL REFERENCES blog_posts(post_id),
-    user_id    integer NOT NULL REFERENCES users(user_id),
+    id    integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    post_id    integer NOT NULL REFERENCES blog_posts(id),
+    user_id    integer NOT NULL REFERENCES users(id),
     comment    text NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE service_requests (
-    request_id   integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    vehicle_id   integer NOT NULL REFERENCES vehicles(vehicle_id),
-    user_id      integer NOT NULL REFERENCES users(user_id),
+    id   integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    vehicle_id   integer NOT NULL REFERENCES vehicles(id),
+    user_id      integer NOT NULL REFERENCES users(id),
     service_type text NOT NULL,
     status       text NOT NULL,
     created_at   timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE contacts (
-    contact_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id    integer NOT NULL REFERENCES users(user_id),
+    id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id    integer NOT NULL REFERENCES users(id),
     message    text NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE vehicle_images (
-    image_id   integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    vehicle_id integer NOT NULL REFERENCES vehicles(vehicle_id),
+    id   integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    vehicle_id integer NOT NULL REFERENCES vehicles(id),
     image_url  text NOT NULL
 );
 
