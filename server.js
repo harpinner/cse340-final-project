@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+dotenv.config();
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import express from 'express';
 import ejs from 'ejs';
 const app = express();

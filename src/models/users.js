@@ -8,6 +8,7 @@ const getUserByEmail = async (email) => {
     return result.rows[0];
 };
 
+
 const getUserByUsername = async (username) => {
     const query = 'SELECT * FROM users WHERE username = $1';
     const values = [username];
