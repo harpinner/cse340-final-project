@@ -1,0 +1,20 @@
+<% include('../partials/header') %>
+
+<h1>Service Request Detail</h1>
+<% if (session.user.role === 'employee') { %>
+    <form action="/service-requests/<%= serviceRequest.id %>/status" method="post">
+        <label for="status">Update Status:</label>
+        <select name="status" id="status">
+            <option value="pending" <%= serviceRequest.status === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="in progress" <%= serviceRequest.status === 'in progress' ? 'selected' : '' %>>In Progress</option>
+            <option value="completed" <%= serviceRequest.status === 'completed' ? 'selected' : '' %>>Completed</option>
+        </select>
+        <textarea name="description" id="description" placeholder="Add a note or update description..."><%= serviceRequest.description %></textarea>
+        <input type="hidden" name="_method" value="PUT">
+        <button type="submit">Update Status</button>
+    </form>
+<% } %>
+<p><strong>Description:</strong> <%= serviceRequest.description %></p>
+<p><strong>Status:</strong> <%= serviceRequest.status %></p>
+
+<% include('../partials/footer') %>

@@ -18,6 +18,7 @@ CREATE TABLE vehicles (
     model       text NOT NULL,
     year        integer NOT NULL,
     price       numeric(10, 2) NOT NULL,
+    category_id integer REFERENCES categories(id),
     description text,
     image_url   text
 );
@@ -66,6 +67,7 @@ CREATE TABLE service_requests (
     vehicle_id   integer NOT NULL REFERENCES vehicles(id),
     user_id      integer NOT NULL REFERENCES users(id),
     service_type text NOT NULL,
+    description  text,
     status       text NOT NULL,
     created_at   timestamp DEFAULT CURRENT_TIMESTAMP
 );

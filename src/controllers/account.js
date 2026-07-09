@@ -1,4 +1,5 @@
 import { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser, getAllUsers, getUserByUsername } from "../models/users.js";
+import { getServiceRequestById, createServiceRequest, updateServiceRequestStatus, deleteServiceRequest, getAllServiceRequests, getServiceRequestsByUserId } from "../models/servicerequests.js";
 import { Router } from "express";
 
 const router = Router();
@@ -53,10 +54,58 @@ const updatePassword = async (req, res) => {
     res.status(200).json({ message: 'Password updated successfully', user: updatedUser });
 }
 
+const userDashboard = async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const userId = req.session.user.id;
+    const user = await getUserById(userId);
+    const serviceRequests = await getServiceRequestsByUserId(userId);
+    res.render('account', { title: 'Account', user: user, serviceRequests: serviceRequests });
+    //res.status(200).json({ user, serviceRequests });
+
+}
+
+const requestService = async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const userId = req.session.user.id;
+    const { description } = req.body;
+    const newServiceRequest = await createServiceRequest(userId, description);
+   // res.status(201).json({ message: 'Service request created successfully', serviceRequest: newServiceRequest });
+    res.redirect('/account'); // Redirect to the account page after creating the service request
+}
+
+
+const deleteServiceRequestById = async (req, res) => {
+    const { id } = req.params;
+    const deletedServiceRequest = await deleteServiceRequest(id);
+    if (!deletedServiceRequest) {
+        return res.status(404).json({ message: 'Service request not found' });
+    }
+    // res.status(200).json({ message: 'Service request deleted successfully', serviceRequest: deletedServiceRequest });
+    res.redirect('/account'); // Redirect to the account page after deleting the service request
+}
+
+const updateServiceRequestStatusById = async (req, res) => {
+    const { id } = req.params;
+    const { newStatus } = req.body;
+    const updatedServiceRequest = await updateServiceRequestStatus(id, newStatus);
+    if (!updatedServiceRequest) {
+        return res.status(404).json({ message: 'Service request not found' });
+    }
+    // res.status(200).json({ message: 'Service request status updated successfully', serviceRequest: updatedServiceRequest });
+    res.redirect('/account'); // Redirect to the account page after updating the service request status
+}
 
 router.post('/register', register);
 router.post('/login', login);
 router.post('/logout', logout);
 router.put('/users/:id/password', updatePassword);
+router.get('/users/', userDashboard);
+router.post('/service-requests', requestService);
+router.delete('/service-requests/:id', deleteServiceRequestById);
+router.put('/service-requests/:id/status', updateServiceRequestStatusById);
 
 export default router;

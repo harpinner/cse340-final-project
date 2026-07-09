@@ -1,7 +1,7 @@
 import db from "db.js";
 
 const getBlogById = async (id) => {
-    const query = 'SELECT * FROM blogs WHERE id = $1';
+    const query = 'SELECT blogs.*, users.id as author_id, users.name as author FROM blogs JOIN users ON blogs.author_id = users.id WHERE blogs.id = $1';
     const values = [id];
     const result = await db.query(query, values);
     return result.rows[0];
@@ -29,7 +29,7 @@ const deleteBlog = async (id) => {
 }
 
 const getAllBlogs = async () => {
-    const query = 'SELECT * FROM blogs';
+    const query = 'SELECT blogs.*, users.id as author_id, users.username as author FROM blogs JOIN users ON blogs.author_id = users.id';
     const result = await db.query(query);
     return result.rows;
 }

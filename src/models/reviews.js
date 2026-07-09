@@ -1,4 +1,4 @@
-import db from "db.js";
+import db from "./db.js";
 
 const getReviewById = async (id) => {
     const query = 'SELECT * FROM reviews WHERE id = $1';

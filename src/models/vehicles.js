@@ -1,4 +1,4 @@
-import db from "db.js";
+import db from "./db.js";
 
 const getVehicleById = async (id) => {
     const query = 'SELECT * FROM vehicles WHERE id = $1';

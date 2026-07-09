@@ -1,4 +1,4 @@
-import db from "db.js";
+import db from "./db.js";
 
 const getServiceRequestById = async (id) => {
     const query = 'SELECT * FROM service_requests WHERE id = $1';
@@ -28,10 +28,18 @@ const deleteServiceRequest = async (id) => {
     return result.rows[0];
 }
 
+const getServiceRequestsByUserId = async (userId) => {
+    const query = 'SELECT * FROM service_requests WHERE user_id = $1';
+    const values = [userId];
+    const result = await db.query(query, values);
+    return result.rows;
+}
+
+
 const getAllServiceRequests = async () => {
     const query = 'SELECT * FROM service_requests';
     const result = await db.query(query);
     return result.rows;
 }
 
-export { getServiceRequestById, createServiceRequest, updateServiceRequestStatus, deleteServiceRequest, getAllServiceRequests };
+export { getServiceRequestById, createServiceRequest, updateServiceRequestStatus, deleteServiceRequest, getAllServiceRequests, getServiceRequestsByUserId };

@@ -1,4 +1,4 @@
-import db from "db.js";
+import db from "./db.js";
 
 
 const getUserByEmail = async (email) => {
@@ -30,6 +30,15 @@ const getUserById = async (id) => {
     return result.rows[0];
 }
 
+const updateUser = async (id, email, role, username) => {
+    const query = 'UPDATE users SET email = $1, role = $2, username = $3 WHERE id = $4 RETURNING *';
+    const values = [email, role, username, id];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+
+
 const updateUserPassword = async (id, newPasswordHash) => {
     const query = 'UPDATE users SET password_hash = $1 WHERE id = $2 RETURNING *';
     const values = [newPasswordHash, id];
@@ -51,4 +60,4 @@ const getAllUsers = async () => {
     return result.rows;
 };
 
-export { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser, getAllUsers, getUserByUsername };
+export { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser, getAllUsers, getUserByUsername, updateUser };

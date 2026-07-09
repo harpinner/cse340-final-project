@@ -1,4 +1,5 @@
 import fs from 'fs';
+import 'dotenv/config';
 import path from 'path';
 import { Pool } from 'pg';
 import { fileURLToPath } from 'url';
@@ -6,6 +7,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+console.log("the url:" + process.env.DB_URL)
 
 // Read the CA certificate content
 const caCert = fs.readFileSync(path.join(__dirname, '../../bin', 'byuicse-psql-cert.pem'));
