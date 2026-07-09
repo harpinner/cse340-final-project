@@ -11,7 +11,9 @@ const register = async (req, res) => {
         return res.status(400).json({ message: 'User already exists' });
     }
     const newUser = await createUser(email, password, role, username);
-    res.status(201).json({ message: 'User created successfully', user: newUser });
+    //res.status(201).json({ message: 'User created successfully', user: newUser });
+    
+    res.redirect('/login'); // Redirect to the login page after successful registration
 };
 
 
@@ -30,7 +32,8 @@ const login = async (req, res) => {
 
         req.session.user = user; // Store user in session
 
-        res.status(200).json({ message: 'Login successful', user });
+       // res.status(200).json({ message: 'Login successful', user });
+        res.render('placeholder', { title: 'Home' });
     }
 }
 

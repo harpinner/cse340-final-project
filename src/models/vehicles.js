@@ -34,4 +34,32 @@ const getAllVehicles = async () => {
     return result.rows;
 }
 
-export { getVehicleById, createVehicle, updateVehicle, deleteVehicle, getAllVehicles };
+const createVehicleImage = async (vehicleId, imagePath) => {
+    const query = 'INSERT INTO vehicle_images (vehicle_id, image_path) VALUES ($1, $2) RETURNING *';
+    const values = [vehicleId, imagePath];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+const getVehicleImageByVehicleId = async (vehicleId) => {
+    const query = 'SELECT * FROM vehicle_images WHERE vehicle_id = $1';
+    const values = [vehicleId];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+const updateVehicleImage = async (vehicleId, imagePath) => {
+    const query = 'UPDATE vehicle_images SET image_path = $1 WHERE vehicle_id = $2 RETURNING *';
+    const values = [imagePath, vehicleId];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+const deleteVehicleImage = async (vehicleId) => {
+    const query = 'DELETE FROM vehicle_images WHERE vehicle_id = $1 RETURNING *';
+    const values = [vehicleId];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+export { getVehicleById, createVehicle, updateVehicle, deleteVehicle, getAllVehicles, createVehicleImage, getVehicleImageByVehicleId, updateVehicleImage, deleteVehicleImage };

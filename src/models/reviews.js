@@ -34,4 +34,11 @@ const getAllReviews = async () => {
     return result.rows;
 }
 
-export { getReviewById, createReview, updateReview, deleteReview, getAllReviews };
+const getReviewsByVehicleId = async (vehicleId) => {
+    const query = 'SELECT * FROM reviews WHERE vehicle_id = $1';
+    const values = [vehicleId];
+    const result = await db.query(query, values);
+    return result.rows;
+}
+
+export { getReviewById, createReview, updateReview, deleteReview, getAllReviews, getReviewsByVehicleId };

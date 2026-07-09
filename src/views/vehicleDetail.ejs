@@ -1,0 +1,98 @@
+<main>
+ 
+  <div class="crumb"><a href="#">Inventory</a> / 2011 Meridian Coupe</div>
+ 
+  <div class="detail-hero">
+    <div class="photo-frame">[ vehicle photo, taken quickly ]</div>
+ 
+    <div class="info-panel">
+      <div class="stamp-mini">INSPECTED*</div>
+      <h1>2011 Meridian Coupe</h1>
+      <div class="price-line">$2,995 OBO <span>· 187,442 miles (one of the odometers)</span></div>
+ 
+      <dl class="spec-grid">
+        <div><dt>Transmission</dt><dd>Automatic, usually</dd></div>
+        <div><dt>Fuel Type</dt><dd>Gasoline, we think</dd></div>
+        <div><dt>Exterior</dt><dd>Silver-ish</dd></div>
+        <div><dt>Warranty</dt><dd>30-Minute</dd></div>
+      </dl>
+ 
+      <ul class="selling-points">
+        <li>Runs when warm, cold, or medium</li>
+        <li>Aftermarket duct-tape trim, matches interior</li>
+        <li>"Check Engine" light removed for a cleaner dash</li>
+        <li>Comes with the good spare, not the donut</li>
+      </ul>
+ 
+      <button class="contact-btn">Ask About This Vehicle</button>
+    </div>
+  </div>
+ 
+  <h2 class="section-title">Customer Reviews</h2>
+ 
+  <div class="review-summary">
+    <div class="review-score">2.1</div>
+    <div>
+      <div class="review-stars">★★☆☆☆</div>
+      <div class="review-count">Based on 6 reviews</div>
+    </div>
+  </div>
+ 
+  <div class="review-list">
+ 
+    <div class="review">
+      <div class="review-head">
+        <div class="reviewer">Dana R. <span class="verified">VERIFIED BUYER</span></div>
+        <div class="review-stars-row">★☆☆☆☆</div>
+      </div>
+      <div class="review-date">Posted 3 weeks ago</div>
+      <div><span class="review-flag flag-concern">MECHANICAL</span></div>
+      <p class="review-body">
+        The transmission gave out eleven days after I drove it off the lot. Eleven days.
+        I called and the guy told me "that's basically new car territory for us." I am
+        never doing business here again and I am telling everyone I know.
+      </p>
+      <div class="review-reply"><strong>Large Motors response:</strong> Dana, eleven days is well past our confidence window and we stand by that. We're sorry you're upset, but the vehicle was sold as-is, as discussed, at length, in the parking lot.</div>
+    </div>
+  <% reviews.forEach(function(review) { %>
+    <div class="review">
+      <div class="review-head">
+        <div class="reviewer"><%= review.reviewer %></div>
+        <div class="review-stars-row">
+          <% for (let i = 1; i <= 5; i++) { %><%= i <= (review.rating || 0) ? '★' : '☆' %><% } %>
+        </div>
+      </div>
+      <div class="review-date"><%= review.date %></div>
+      <p class="review-body">
+        <%= review.body %>
+      </p>
+    </div>
+  <% }); %>
+  </div>
+ 
+  <div class="review-form-panel">
+    <h3>Leave a Review</h3>
+    <form id="review-form">
+      <div class="rf-field">
+        <label for="rname">Your Name</label>
+        <input type="text" id="rname" required>
+      </div>
+      <div class="rf-field">
+        <label>Rating</label>
+        <div class="star-picker" id="star-picker">
+          <button type="button" data-val="1">★</button>
+          <button type="button" data-val="2">★</button>
+          <button type="button" data-val="3">★</button>
+          <button type="button" data-val="4">★</button>
+          <button type="button" data-val="5">★</button>
+        </div>
+      </div>
+      <div class="rf-field">
+        <label for="rtext">Review</label>
+        <textarea id="rtext" placeholder="Tell us how it's holding up..." required></textarea>
+      </div>
+      <button type="submit" class="post-review-btn">Post Review</button>
+    </form>
+  </div>
+ 
+</main>
