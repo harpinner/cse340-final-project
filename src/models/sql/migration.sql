@@ -19,8 +19,7 @@ CREATE TABLE vehicles (
     year        integer NOT NULL,
     price       numeric(10, 2) NOT NULL,
     category_id integer REFERENCES categories(id),
-    description text,
-    image_url   text
+    description text
 );
 
 CREATE TABLE users (
@@ -85,6 +84,19 @@ CREATE TABLE vehicle_images (
     image_url  text NOT NULL
 );
 
+CREATE TYPE service_cat AS ENUM (
+    'maintenance',
+    'repair',
+    'inspection',
+    'seasonal'
+);
+ 
+CREATE TABLE service_types (
+    id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name text NOT NULL,
+    category service_cat NOT NULL
+);
+
 -- ---------------------------------------------------------------------
 -- Seed data
 -- ---------------------------------------------------------------------
@@ -107,18 +119,88 @@ INSERT INTO users (username, password, role, email) VALUES
     ('tom_w',        '$2b$12$placeholderHashTomW000000000000000000000000',  'customer', 'tom.w@example.com');
 
 -- Vehicles: current lot inventory
-INSERT INTO vehicles (make, model, year, price, description, image_url) VALUES
-    ('Meridian', 'Coupe',  2011, 2995.00,
-     'Runs when warm, cold, or medium. Aftermarket duct-tape trim, matches interior. Comes with the good spare, not the donut.',
-     '/images/vehicles/meridian-coupe-2011.jpg'),
-    ('Highline', 'Sedan',  2014, 4400.00,
-     'Only driven to church, allegedly. Minor sunroof (permanently open). Brakes make a sound that means it''s working.',
-     '/images/vehicles/highline-sedan-2014.jpg'),
-    ('Vandale',  'Wagon',  2008, 1750.00,
-     'Some rust is structural, some is decorative. Radio only plays AM, which builds character. Never been in an accident we know about.',
-     '/images/vehicles/vandale-wagon-2008.jpg'),
-    ('Cresthill','SUV',    2016, 6800.00,
-     'Four doors, four tires, one steering wheel. Recently detailed to remove evidence. Backed by our famous handshake guarantee.',
-     '/images/vehicles/cresthill-suv-2016.jpg');
+WITH new_vehicles AS (
+    INSERT INTO vehicles (make, model, year, price, description) VALUES
+        ('Meridian', 'Coupe',  2011, 2995.00,
+         'Runs when warm, cold, or medium. Aftermarket duct-tape trim, matches interior. Comes with the good spare, not the donut.'),
+        ('Highline', 'Sedan',  2014, 4400.00,
+         'Only driven to church, allegedly. Minor sunroof (permanently open). Brakes make a sound that means it''s working.'),
+        ('Vandale',  'Wagon',  2008, 1750.00,
+         'Some rust is structural, some is decorative. Radio only plays AM, which builds character. Never been in an accident we know about.'),
+        ('Cresthill','SUV',    2016, 6800.00,
+         'Four doors, four tires, one steering wheel. Recently detailed to remove evidence. Backed by our famous handshake guarantee.')
+    RETURNING id, make, model, year
+),
+image_data (make, model, year, image_url) AS (
+    VALUES
+        ('Meridian', 'Coupe',  2011, '/images/vehicles/meridian-coupe-2011.jpg'),
+        ('Highline', 'Sedan',  2014, '/images/vehicles/highline-sedan-2014.jpg'),
+        ('Vandale',  'Wagon',  2008, '/images/vehicles/vandale-wagon-2008.jpg'),
+        ('Cresthill','SUV',    2016, '/images/vehicles/cresthill-suv-2016.jpg')
+)
+INSERT INTO vehicle_images (vehicle_id, image_url)
+SELECT nv.id, img.image_url
+FROM new_vehicles nv
+JOIN image_data img
+  ON nv.make = img.make AND nv.model = img.model AND nv.year = img.year;
+
+
+
+     -- Routine maintenance
+INSERT INTO service_types (name, category) VALUES
+    ('Oil and filter change', 'maintenance'),
+    ('Tire rotation', 'maintenance'),
+    ('Tire balancing and alignment', 'maintenance'),
+    ('Engine air filter replacement', 'maintenance'),
+    ('Cabin air filter replacement', 'maintenance'),
+    ('Fluid check/top-off', 'maintenance'),
+    ('Wiper blade replacement', 'maintenance'),
+    ('Battery testing', 'maintenance'),
+    ('Battery replacement', 'maintenance');
+ 
+-- Periodic / mileage-based
+INSERT INTO service_types (name, category) VALUES
+    ('Brake pad and rotor replacement', 'repair'),
+    ('Transmission fluid service', 'maintenance'),
+    ('Spark plug replacement', 'maintenance'),
+    ('Timing belt/chain replacement', 'repair'),
+    ('Fuel filter replacement', 'maintenance'),
+    ('Serpentine/drive belt replacement', 'repair'),
+    ('Differential and transfer case fluid service', 'maintenance'),
+    ('Coolant flush', 'maintenance'),
+    ('Brake fluid flush', 'maintenance');
+ 
+-- Inspections
+INSERT INTO service_types (name, category) VALUES
+    ('Multi-point inspection', 'inspection'),
+    ('State safety/emissions inspection', 'inspection'),
+    ('Pre-purchase inspection', 'inspection'),
+    ('Suspension and steering inspection', 'inspection'),
+    ('Brake inspection', 'inspection'),
+    ('Check engine light diagnostics', 'inspection');
+ 
+-- Repairs
+INSERT INTO service_types (name, category) VALUES
+    ('Brake repair', 'repair'),
+    ('Suspension repair', 'repair'),
+    ('Exhaust system repair', 'repair'),
+    ('Engine repair', 'repair'),
+    ('Transmission repair', 'repair'),
+    ('Electrical system diagnostics and repair', 'repair'),
+    ('AC/heating system service', 'repair'),
+    ('Wheel bearing replacement', 'repair'),
+    ('ECU reprogramming', 'repair'),
+    ('Windshield repair/replacement', 'repair'),
+    ('Recall-related repair', 'repair');
+ 
+-- Seasonal
+INSERT INTO service_types (name, category) VALUES
+    ('Winterization service', 'seasonal'),
+    ('AC service/recharge (summer)', 'seasonal'),
+    ('Seasonal tire changeover', 'seasonal');
+ 
+-- Specialty
+INSERT INTO service_types (name, category) VALUES
+    ('Detailing (interior/exterior)', 'maintenance');
 
 COMMIT;

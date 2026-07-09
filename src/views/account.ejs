@@ -26,6 +26,17 @@
             <% }); %>
         </tbody>
     </table>
+
+    <form action="/accounts/service-requests" method="post">
+        <input type="text" name="description" id="description">
+        <select name="vehicle_id" id="">
+            <% vehicles.forEach(function(vehicle) {%>
+                <option value='<%= vehicle.id %>'> <%= vehicle.name %></option>
+            <% }); %>
+        </select>
+        <select name="service_type" id=""></select>
+        <button type="submit">Submit Request</button>
+    </form>
     
     
     

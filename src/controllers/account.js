@@ -70,8 +70,10 @@ const requestService = async (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
+    
+
     const userId = req.session.user.id;
-    const { description } = req.body;
+    const { description, vehicle_id, service_type } = req.body;
     const newServiceRequest = await createServiceRequest(userId, description);
    // res.status(201).json({ message: 'Service request created successfully', serviceRequest: newServiceRequest });
     res.redirect('/account'); // Redirect to the account page after creating the service request

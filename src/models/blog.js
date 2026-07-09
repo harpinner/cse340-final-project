@@ -33,4 +33,33 @@ const getAllBlogs = async () => {
     const result = await db.query(query);
     return result.rows;
 }
-export { getBlogById, createBlog, updateBlog, deleteBlog, getAllBlogs };
+
+const createComment  = async (blog_id, user_id, content) => {
+    const query = 'INSERT INTO blog_comments (post_id, user_id, comment)VALUES ($1, $2, $3) RETURNING *';
+    const values = [blog_id, user_id, content];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+const updateComment = async(blog_id, content) =>{
+    const query = 'UPDATE blog_comments SET content = $1 WHERE id = $2 RETURNING *';
+    const values = [blog_id,content];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+const deleteComment = async(id) =>{
+    const query = 'DELETE FROM blog_comments WHERE id = $1 RETURNING *';
+    const values = [id];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
+const getAllComments = async (blog_id) => {
+    const query = 'SELECT blog_comments.*, users.id as user_id, users.username as user FROM blog_comments JOIN users ON blog_comments.user_id = users.id WHERE blog_comments.post_id = $1';
+    const values = [blog_id];
+    const result = await db.query(query, values);
+    return result.rows;
+}
+
+export { getBlogById, createBlog, updateBlog, deleteBlog, getAllBlogs, createComment, updateComment, deleteComment, getAllComments };
