@@ -2,7 +2,7 @@ import { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser
 import { getServiceRequestById, createServiceRequest, updateServiceRequestStatus, deleteServiceRequest, getAllServiceRequests, getServiceRequestsByUserId } from "../models/servicerequests.js";
 import { Router } from "express";
 import { body, validationResult } from 'express-validator';
-import flash from 'connect-flash';
+import flash from 'express-flash-message';
 import bcrypt from 'bcrypt';
 
 const router = Router();

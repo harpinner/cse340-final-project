@@ -6,7 +6,7 @@ import { caCert } from './src/models/db.js';
 import { startSessionCleanup } from './src/utils/session-cleanup.js';
 import express from 'express';
 import ejs from 'ejs';
-import flash from 'connect-flash';
+import flash from 'express-flash-message';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
