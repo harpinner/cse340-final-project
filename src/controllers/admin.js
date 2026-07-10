@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getAllUsers, deleteUser, getUserById, updateUser} from "../models/users.js";
 import { getAllVehicles, deleteVehicle, createVehicle } from "../models/vehicles.js";
 import { createCategory, getAllCategories, deleteCategory, updateCategory, getCategoryById } from "../models/categories.js";
+import { body, validationResult } from 'express-validator';
 
 const router = Router();
 

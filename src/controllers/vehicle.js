@@ -1,6 +1,7 @@
 import { getVehicleById, createVehicle, updateVehicle, deleteVehicle, getAllVehicles, crea } from "../models/vehicles";
 import { getReviewsByVehicleId, createReview, deleteReview, updateReview, getAllReviews} from "../models/reviews.js";
 import { Router } from "express";
+import { body, validationResult } from 'express-validator';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';

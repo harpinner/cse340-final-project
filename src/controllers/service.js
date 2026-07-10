@@ -1,6 +1,6 @@
 import { getServiceRequestById, createServiceRequest, updateServiceRequestStatus, deleteServiceRequest, getAllServiceRequests, getServiceRequestsByUserId } from "../models/servicerequests.js";
 import { Router } from "express";
-
+import { body, validationResult } from 'express-validator';
 
 const router = Router();
 

@@ -1,5 +1,6 @@
 import {createContact, updateContact, deleteContact, getAllContacts, getContactById, getContactsByUserId} from "../models/contacts.js";
 import { Router } from "express";
+import { body, validationResult } from 'express-validator';
 
 
 const getContactDetail = async (req, res) => {

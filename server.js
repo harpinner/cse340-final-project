@@ -6,16 +6,18 @@ import { caCert } from './src/models/db.js';
 import { startSessionCleanup } from './src/utils/session-cleanup.js';
 import express from 'express';
 import ejs from 'ejs';
+import flash from 'connect-flash';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(flash());
 
 // Initialize PostgreSQL session store
 const pgSession = connectPgSimple(session);
 const DBurl  = process.env.DB_URL;
 // Configure session middleware
-console.log(caCert)
+//console.log(caCert)
 
 app.use(session({
     store: new pgSession({
