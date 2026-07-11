@@ -1,0 +1,136 @@
+<%- include('partials/header') %>
+<header>
+  Vehicle Inventory
+</header>
+
+<main>
+    <% if (session.user && session.user.role === 'admin' || session.user && session.user.role === 'employee') { %>
+    <div class="toolbar">
+      <div>
+        <h2>Manage Inventory</h2>
+        <div class="sub">Add, edit, or delete vehicles from the inventory.</div>
+      </div>
+    </div>
+
+
+  <h2 class="section-title" id="form-heading">Add a Vehicle</h2>
+  <div class="panel">
+    <!-- FIX: Added enctype for file upload -->
+    <form id="vehicle-form" method="post" action="/vehicles" enctype="multipart/form-data" novalidate>
+      <input type="hidden" id="vehicle-id" name="id" value="">
+
+      <div class="field-grid">
+        <!-- FIX: Added name attributes to all inputs below -->
+        <div class="field">
+          <label for="make">Make</label>
+          <input type="text" id="make" name="make" placeholder="Meridian" required>
+        </div>
+
+        <div class="field">
+          <label for="model">Model</label>
+          <input type="text" id="model" name="model" placeholder="Coupe" required>
+        </div>
+
+        <div class="field">
+          <label for="year">Year</label>
+          <input type="number" id="year" name="year" min="1970" max="2027" placeholder="2014" required>
+        </div>
+
+        <div class="field">
+          <label for="price">Price <span class="hint">(USD)</span></label>
+          <input type="number" id="price" name="price" min="0" step="0.01" placeholder="2995.00" required>
+        </div>
+
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category" name="category" required>
+            <option value="" disabled selected>Select a category</option>
+            <!-- Tip: You'll likely want to loop through your categories here too -->
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="image">Image</label>
+          <input type="file" id="image" name="image" accept="image/*" required>
+        </div>
+
+        <div class="field full">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" placeholder="Runs when warm, cold, or medium. Aftermarket duct-tape trim, matches interior."></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-btn" id="submit-btn">Add To Lot</button>
+      </div>
+    </form>
+  </div>
+  <% } %>
+  <h2 class="section-title">Current Inventory</h2>
+  <!-- Tip: If this count needs to be dynamic based on your array data, you could use <%= vehicles.length %> -->
+   <% if (vehicles.length <= 0) { %>
+  <p class="inv-count" id="inv-count">0 vehicles on the lot.</p>
+   <% } else { %>
+  <p class="inv-count" id="inv-count"><%= vehicles.length %> vehicles on the lot.</p>
+   <% } %>
+
+  <div class="inv-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Vehicle</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Description</th>
+          <th>Image</th>
+          <% if (session.user && session.user.role === 'admin' || session.user && session.user.role === 'employee') { %>
+          <th>Actions</th>
+            <% } %>
+        </tr>
+      </thead>
+      <tbody id="vehicle-list">
+        <% vehicles.forEach(function(vehicle) { %>
+          <tr data-id="<%= vehicle.id %>">
+            <% if (typeof editedVehicleId !== 'undefined' && vehicle.id === editedVehicleId) { %>
+                <td colspan="6" class="edit-row">
+                    <form class="edit-form" method="post" action="/vehicles/edit/<%= vehicle.id %>">
+                      <input type="text" name="make" value="<%= vehicle.make %>" required>
+                      <input type="text" name="model" value="<%= vehicle.model %>" required>
+                      <input type="number" name="year" value="<%= vehicle.year %>" min="1970" max="2027" required>
+                      <input type="number" name="price" value="<%= vehicle.price %>" min="0" step="0.01" required>
+                      <select name="category" required>
+                          <% categories.forEach(function(category) { %>
+                            <option value="<%= category %>" <%= category === vehicle.category ? 'selected' : '' %>><%= category %></option>
+                          <% }); %>
+                      </select>
+                      <textarea name="description"><%= vehicle.description %></textarea>
+                      <button type="submit">Save</button>
+                    </form>
+                </td>
+            <% } else { %> 
+                <td><%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %></td>
+                <td><%= vehicle.category %></td>
+                <td>$<%= Number(vehicle.price).toFixed(2) %></td>
+                <td><%= vehicle.description %></td>
+                <td><img src="<%= vehicle.image_url %>" alt="<%= vehicle.make + ' ' + vehicle.model %>" class="vehicle-image" width="200"></td>
+                <% if (session.user && session.user.role === 'admin' || session.user && session.user.role === 'employee') { %>
+                  <td>
+                    <a href="/vehicles/edit/<%= vehicle.id %>/" class="btn btn-primary">Edit</a>
+                    <a href="/vehicles/delete/<%= vehicle.id %>/" class="btn btn-danger">Delete</a>
+                  </td>
+                <% }  %>
+                  
+               
+            
+                
+            <% } %> <!-- FIX: Properly closed the else block -->
+          </tr>
+        <% }); %> <!-- FIX: Properly closed the forEach loop -->
+      </tbody>
+    </table>
+    <% if (vehicles.length <= 0) { %>
+      <div id="empty-state" class="empty-state">No vehicles yet. Add one above to get the lot started.</div>
+    <% } %>
+  </div>
+</main>
+<%- include('partials/footer') %>

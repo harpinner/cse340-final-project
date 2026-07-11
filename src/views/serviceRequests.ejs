@@ -1,0 +1,58 @@
+
+<%- include('partials/header') %>
+<header>
+  <p>Back Office — Service Requests</p>
+  <span class="badge-office">STAFF ONLY, PROBABLY FINE</span>
+</header>
+
+<main>
+
+
+  <h2 class="section-title">Open &amp; Recent Requests</h2>
+  <p class="inv-count"><%= serviceRequests.length %> requests on file.</p>
+
+  <div class="inv-table-wrap" id="request-log">
+    <table>
+      <thead>
+        <tr>
+          <th>Vehicle</th>
+          <th>Requested By</th>
+          <th>Service Type</th>
+          <th>Status</th>
+          <th>Description</th>
+          <th>Logged</th>
+          <th>Update Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% serviceRequests.forEach(function(request) { %>
+        <tr>
+          <td><strong><%= request.make %> <%= request.model %> <%= request.year %></strong></td>
+          <td><a href="mailto:<%= request.email %>"><%= request.username %></a></td>
+          <td><%= request.service_type %></td>
+          <td><span class="status-pill status-<%= request.status %>"><%= request.status %></span></td>
+          <td class="row-notes"><%= request.request_description %></td>
+          <td><%= request.request_created_at %></td>
+          <td>
+            <form method="put" action="/service-requests/<%= request.id %>">
+              <div class="request-actions">
+                <select class="status-select" name="status">
+                  <option value="requested">Requested</option>
+                  <option value="in_progress" selected>In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+                <button type="submit" class="delete-btn" style="border-color:var(--flag-blue); color:var(--flag-blue);">Update</button>
+              </div>
+            </form>
+            <a href="/service-requests/<%= request.id %>/delete" class="delete-btn" style="border-color:var(--flag-red); color:var(--flag-red);">Delete</a>
+          </td>
+        </tr>
+        <% }); %>
+       
+      </tbody>
+    </table>
+  </div>
+
+</main>
+<%- include('partials/footer') %>

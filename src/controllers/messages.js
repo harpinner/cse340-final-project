@@ -2,7 +2,7 @@ import {createContact, updateContact, deleteContact, getAllContacts, getContactB
 import { Router } from "express";
 import { body, validationResult } from 'express-validator';
 
-
+//Large Motors — Contact Us
 const getContactDetail = async (req, res) => {
     const { id } = req.params;
     const contact = await getContactById(id);
@@ -31,7 +31,8 @@ const deleteContactDetail = async (req, res) => {
 
 const getAllContactsList = async (req, res) => {
     const contacts = await getAllContacts();
-    res.json(contacts);
+   // res.json(contacts);
+    res.render('contacts', { title: 'Contact Us', contacts: contacts });
 }
 
 const respondToContact = async (req, res) => {

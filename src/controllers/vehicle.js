@@ -1,5 +1,7 @@
-import { getVehicleById, createVehicle, updateVehicle, deleteVehicle, getAllVehicles, crea } from "../models/vehicles";
+import { getVehicleById, createVehicle, updateVehicle as updateVehicleInDb, deleteVehicle as deleteVehicleInDb, getAllVehicles } from "../models/vehicles.js";
 import { getReviewsByVehicleId, createReview, deleteReview, updateReview, getAllReviews} from "../models/reviews.js";
+import { getVehicleImageByVehicleId, createVehicleImage, updateVehicleImage, deleteVehicleImage } from "../models/vehicles.js";
+import { getCategoryById, getAllCategories } from "../models/categories.js";
 import { Router } from "express";
 import { body, validationResult } from 'express-validator';
 import multer from 'multer';
@@ -60,7 +62,7 @@ const createNewVehicle = async (req, res) => {
 const updateVehicle = async (req, res) => {
     const { id } = req.params;
     const { make, model, year, price } = req.body;
-    const updatedVehicle = await updateVehicle(id, make, model, year, price);
+    const updatedVehicle = await updateVehicleInDb(id, make, model, year, price);
     if (!updatedVehicle) {
         return res.status(404).json({ message: 'Vehicle not found' });
     }
@@ -75,7 +77,7 @@ const updateVehicle = async (req, res) => {
 
 const deleteVehicleById = async (req, res) => {
     const { id } = req.params;
-    const deletedVehicle = await deleteVehicle(id);
+    const deletedVehicle = await deleteVehicleInDb(id);
     const deletedVehicleImage = await deleteVehicleImage(id);
     if (!deletedVehicle) {
         return res.status(404).json({ message: 'Vehicle not found' });
@@ -86,7 +88,8 @@ const deleteVehicleById = async (req, res) => {
 
 const getAllVehiclesList = async (req, res) => {
     const vehicles = await getAllVehicles();
-    res.status(200).json(vehicles);
+    const categories = await getAllCategories();
+    res.render('vehicles', { title: 'Inventory', vehicles: vehicles, categories: categories });
 }
 
 router.get('/:id', getVehicle);
@@ -99,7 +102,7 @@ router.post('/:vehicleId/reviews', async (req, res) => {
     const { userId, rating, comment } = req.body;
     const newReview = await createReview(userId, vehicleId, rating, comment);
     res.redirect(`/vehicles/${vehicleId}`); // Redirect to the vehicle detail page after creating the review
-    res.status(201).json({ message: 'Review created successfully', review: newReview });
+    //res.status(201).json({ message: 'Review created successfully', review: newReview });
 });
 
 router.put('/:vehicleId/reviews/:reviewId', async (req, res) => {
@@ -108,7 +111,7 @@ router.put('/:vehicleId/reviews/:reviewId', async (req, res) => {
     const updatedReview = await updateReview(reviewId, rating, comment);
     res.redirect(`/vehicles/${req.params.vehicleId}`); // Redirect to the vehicle detail page after updating the review 
 
-    res.status(200).json({ message: 'Review updated successfully', review: updatedReview });
+    //res.status(200).json({ message: 'Review updated successfully', review: updatedReview });
 });
 /*
 router.get('/:vehicleId/reviews', async (req, res) => {

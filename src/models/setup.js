@@ -6,6 +6,25 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const repairSeedImageUrls = async () => {
+    await db.query(`
+        UPDATE vehicle_images
+        SET image_url = CASE image_url
+            WHEN '/images/vehicles/meridian-coupe-2011-1.jpg' THEN '/images/vehicles/meridian-coupe-2011.jpg'
+            WHEN '/images/vehicles/meridian-coupe-2011-2.jpg' THEN '/images/vehicles/meridian-coupe-2011.jpg'
+            WHEN '/images/vehicles/highline-sedan-2014-1.jpg' THEN '/images/vehicles/highline-sedan-2014.jpg'
+            WHEN '/images/vehicles/vandale-wagon-2008-1.jpg' THEN '/images/vehicles/vandale-wagon-2008.jpg'
+            WHEN '/images/vehicles/cresthill-suv-2016-1.jpg' THEN '/images/vehicles/cresthill-suv-2016.jpg'
+        END
+        WHERE image_url IN (
+            '/images/vehicles/meridian-coupe-2011-1.jpg',
+            '/images/vehicles/meridian-coupe-2011-2.jpg',
+            '/images/vehicles/highline-sedan-2014-1.jpg',
+            '/images/vehicles/vandale-wagon-2008-1.jpg',
+            '/images/vehicles/cresthill-suv-2016-1.jpg'
+        )
+    `);
+};
 
 const setupDatabase = async () => {
 
@@ -22,6 +41,7 @@ const setupDatabase = async () => {
     }
 
     if (hasData) {
+        await repairSeedImageUrls();
         console.log('Database already has data. Skipping setup.');
         return;
     }
@@ -32,6 +52,7 @@ const setupDatabase = async () => {
         const sqlFilePath = join(__dirname, 'sql', 'migration.sql');
         const sql = fs.readFileSync(sqlFilePath, 'utf8');
         await db.query(sql);
+        await repairSeedImageUrls();
         console.log('Database setup completed successfully.');
     } catch (error) {
         console.error('Error setting up the database:', error);

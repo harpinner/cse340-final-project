@@ -1,6 +1,4 @@
-<%- include('partials/header') %>
-<main>
-    
+
 
 <header>
   <p>Welcome back, <%= user.username %></p>
@@ -14,7 +12,6 @@
     // default locals, or connect-flash wired up that way). Adjust the
     // variable names below if your flash middleware exposes them differently.
   %>
-  <% const messages = { error: getFlashMessages('error'), success: getFlashMessages('success') }; %>
   <% if (typeof messages !== 'undefined' && messages.error && messages.error.length) { %>
     <div class="status-msg show" style="color:var(--flag-red); display:block; margin-bottom:16px;">
       <% messages.error.forEach(function(msg) { %>⚠ <%= msg %><br><% }) %>
@@ -63,17 +60,12 @@
 
   <h2 class="section-title">Request Service</h2>
   <div class="panel">
-    <form action="/account/service-requests" method="POST">
+    <form action="/service-requests" method="POST">
       <div class="field-grid">
 
         <div class="field">
-          <label for="vehicle_id">Vehicle</label>
-          <select id="vehicle_id" name="vehicle_id" required>
-            <option value="" disabled selected>Select a vehicle</option>
-            <% vehicles.forEach(function(vehicle) { %>
-              <option value="<%= vehicle.id %>"><%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %> (ID #<%= vehicle.id %>)</option>
-            <% }) %>
-          </select>
+          <label for="vehicle_id">Vehicle ID</label>
+          <input type="number" id="vehicle_id" name="vehicle_id" min="1" required>
         </div>
 
         <div class="field">
@@ -123,7 +115,18 @@
             <td class="row-notes"><%= sr.description || '—' %></td>
             <td><%= new Date(sr.created_at).toLocaleDateString() %></td>
             <td>
-              <%= sr.status %>
+              <form action="/service-requests/<%= sr.id %>/status" method="POST">
+                <input type="hidden" name="_method" value="PUT">
+                <div class="request-actions">
+                  <select class="status-select" name="newStatus">
+                    <option value="requested" <%= sr.status === 'requested' ? 'selected' : '' %>>Requested</option>
+                    <option value="in_progress" <%= sr.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                    <option value="completed" <%= sr.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                    <option value="cancelled" <%= sr.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+                  <button type="submit" class="delete-btn" style="border-color:var(--flag-blue); color:var(--flag-blue);">Update</button>
+                </div>
+              </form>
             </td>
             <td>
               <form action="/service-requests/<%= sr.id %>" method="POST">
@@ -158,23 +161,6 @@
     <% } %>
   </div>
 
-   <h2 class="section-title">Send Us a Message</h2>
-  <div class="contact-form-panel">
-    <form id="contact-form" action="/account/contact" method="POST">
-      <input type="hidden" name="user_id" value="<%= user.id %>">
-      <div class="field-grid">
-        <div class="field full">
-          <label for="cmessage">Message</label>
-          <textarea id="cmessage" name="message" placeholder="Tell us what's on your mind. We can take it." required></textarea>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button type="submit" class="submit-btn">Send Message</button>
-      </div>
-    </form>
-  </div>
 </main>
 
 
-
-<%- include('partials/footer') %>

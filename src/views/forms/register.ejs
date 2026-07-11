@@ -1,0 +1,39 @@
+<%- include('../partials/header', { title, pageClass: 'page-register' }) %>
+
+<main>
+  <div class="reg-card">
+    <div class="stamp-corner"><span>NEW ACCOUNT</span></div>
+    <div class="panel">
+      <div>
+        <h1><%= title %></h1>
+        <p class="sub">Takes less time than it takes us to explain that noise the Vandale Wagon makes.</p>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+          <p class="error-text" role="alert"><%= error %></p>
+        <% } %>
+
+        <form action="/accounts/register" method="post">
+          <div class="field">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" autocomplete="username" minlength="2" required autofocus>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="new-password" minlength="6" required>
+            <span class="pw-meter-label">Use at least 6 characters.</span>
+          </div>
+
+          <button type="submit" class="submit-btn">Create Account</button>
+          <p class="form-footer">Already have an account? <a href="/accounts/login">Log in</a>.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+<%- include('../partials/footer') %>

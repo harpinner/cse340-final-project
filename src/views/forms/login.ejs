@@ -1,0 +1,32 @@
+<%- include('../partials/header', { title, pageClass: 'page-login' }) %>
+
+<main>
+  <section class="reg-card" aria-labelledby="login-heading">
+    <div class="stamp-corner"><span>RETURNING DRIVER</span></div>
+    <div class="panel">
+      <h1 id="login-heading"><%= title %></h1>
+      <p class="sub">Sign in to check on your account and service requests.</p>
+
+      <% if (typeof error !== 'undefined' && error) { %>
+        <p class="error-text" role="alert"><%= error %></p>
+      <% } %>
+
+      <form action="/accounts/login" method="post">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" required autofocus>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit" class="submit-btn">Log In</button>
+        <p class="form-footer">Need an account? <a href="/accounts/register">Create one here</a>.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

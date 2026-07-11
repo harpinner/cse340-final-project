@@ -12,6 +12,10 @@ const addLocalVariables = (req, res, next) => {
     // Make req.query available to all templates
     res.locals.queryParams = { ...req.query };
 
+    // Views use session data to show account- and role-specific controls.
+    // Always provide an object so anonymous visitors can render safely.
+    res.locals.session = req.session || {};
+
     // Convenience variable for UI state based on session state
     res.locals.isLoggedIn = false;
     if (req.session && req.session.user) {

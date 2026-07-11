@@ -1,98 +1,101 @@
+<%- include('partials/header') %>
+
 <main>
- 
-  <div class="crumb"><a href="#">Inventory</a> / 2011 Meridian Coupe</div>
- 
+
+  <div class="crumb"><a href="/vehicles">Inventory</a> </div>
+
+  <!-- vehicles JOIN categories JOIN vehicle_images (id=1) -->
   <div class="detail-hero">
-    <div class="photo-frame">[ vehicle photo, taken quickly ]</div>
- 
+
+    <div class="photo-gallery">
+      <div class="photo-frame"><img src="<%=vehicleImage %>" alt=""></div>
+    </div>
+
     <div class="info-panel">
-      <div class="stamp-mini">INSPECTED*</div>
+      <span class="category-badge">Coupe</span>
       <h1>2011 Meridian Coupe</h1>
-      <div class="price-line">$2,995 OBO <span>· 187,442 miles (one of the odometers)</span></div>
- 
-      <dl class="spec-grid">
-        <div><dt>Transmission</dt><dd>Automatic, usually</dd></div>
-        <div><dt>Fuel Type</dt><dd>Gasoline, we think</dd></div>
-        <div><dt>Exterior</dt><dd>Silver-ish</dd></div>
-        <div><dt>Warranty</dt><dd>30-Minute</dd></div>
-      </dl>
- 
-      <ul class="selling-points">
-        <li>Runs when warm, cold, or medium</li>
-        <li>Aftermarket duct-tape trim, matches interior</li>
-        <li>"Check Engine" light removed for a cleaner dash</li>
-        <li>Comes with the good spare, not the donut</li>
-      </ul>
- 
+      <div class="price-line">$2,995.00</div>
+
+      <p class="vehicle-description">
+        Runs when warm, cold, or medium. Aftermarket duct-tape trim, matches interior.
+        Comes with the good spare, not the donut.
+      </p>
+
       <button class="contact-btn">Ask About This Vehicle</button>
     </div>
   </div>
- 
+
   <h2 class="section-title">Customer Reviews</h2>
- 
+
+  <!-- reviews JOIN users ON reviews.user_id = users.id WHERE vehicle_id = 1 -->
   <div class="review-summary">
-    <div class="review-score">2.1</div>
+    <div class="review-score">2.0</div>
     <div>
       <div class="review-stars">★★☆☆☆</div>
       <div class="review-count">Based on 6 reviews</div>
     </div>
   </div>
- 
+
   <div class="review-list">
- 
+<% reviews.forEach(function(review) { %>
     <div class="review">
       <div class="review-head">
-        <div class="reviewer">Dana R. <span class="verified">VERIFIED BUYER</span></div>
-        <div class="review-stars-row">★☆☆☆☆</div>
+        <div class="reviewer"><%=review.user_name %></div>
+        <div class="review-stars-row"><% for (let i = 0; i < review.rating; i++) { %>★<% } %></div>
       </div>
-      <div class="review-date">Posted 3 weeks ago</div>
-      <div><span class="review-flag flag-concern">MECHANICAL</span></div>
+      <div class="review-date"><%=review.review_date %></div>
       <p class="review-body">
-        The transmission gave out eleven days after I drove it off the lot. Eleven days.
-        I called and the guy told me "that's basically new car territory for us." I am
-        never doing business here again and I am telling everyone I know.
       </p>
-      <div class="review-reply"><strong>Large Motors response:</strong> Dana, eleven days is well past our confidence window and we stand by that. We're sorry you're upset, but the vehicle was sold as-is, as discussed, at length, in the parking lot.</div>
-    </div>
-  <% reviews.forEach(function(review) { %>
-    <div class="review">
-      <div class="review-head">
-        <div class="reviewer"><%= review.reviewer %></div>
-        <div class="review-stars-row">
-          <% for (let i = 1; i <= 5; i++) { %><%= i <= (review.rating || 0) ? '★' : '☆' %><% } %>
-        </div>
-      </div>
-      <div class="review-date"><%= review.date %></div>
-      <p class="review-body">
-        <%= review.body %>
+        <%=review.comment %>
       </p>
+      <% if (session.user && session.user.id === review.user_id) { %>
+        <a href="/vehicles/<%= vehicleId %>/reviews/<%= review.id %>/edit">Edit</a>
+        <form method="post" action="/vehicles/<%= vehicleId %>/reviews/<%= review.id %>?_method=DELETE" onsubmit="return confirm('Are you sure you want to delete this review?');">
+          <button type="submit">Delete</button>
+        </form>
+      <% } %>
     </div>
-  <% }); %>
+<% }); %>
+
+   
   </div>
- 
+
+  <!-- new row into reviews: vehicle_id, user_id, rating, comment -->
+   
   <div class="review-form-panel">
+    <% if (session.user) { %>
     <h3>Leave a Review</h3>
-    <form id="review-form">
+    <form id="review-form" method="post" action="<%= '/vehicles/' + vehicleId + '/reviews' %>">
+      <input type="hidden" name="userId" value="<%= session.user ? session.user.id : '' %>">
+      <input type="hidden" name="vehicleId" value="<%= vehicle.id %>">
       <div class="rf-field">
-        <label for="rname">Your Name</label>
-        <input type="text" id="rname" required>
+        <label id="rating-label">Rating</label>
+        <fieldset class="star-rating-input" aria-labelledby="rating-label">
+          <legend class="sr-only">Star rating</legend>
+          <input type="radio" id="star5" name="rating" value="5" required><label for="star5" title="5 stars">★</label>
+          <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">★</label>
+          <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">★</label>
+          <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label>
+          <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label>
+        </fieldset>
+        <div class="rating-fallback-note">Click a star to set your rating — no JavaScript needed.</div>
       </div>
       <div class="rf-field">
-        <label>Rating</label>
-        <div class="star-picker" id="star-picker">
-          <button type="button" data-val="1">★</button>
-          <button type="button" data-val="2">★</button>
-          <button type="button" data-val="3">★</button>
-          <button type="button" data-val="4">★</button>
-          <button type="button" data-val="5">★</button>
-        </div>
-      </div>
-      <div class="rf-field">
-        <label for="rtext">Review</label>
-        <textarea id="rtext" placeholder="Tell us how it's holding up..." required></textarea>
+        <label for="rtext">Comment</label>
+        <textarea id="rtext" name="comment" placeholder="Tell us how it's holding up..." required></textarea>
       </div>
       <button type="submit" class="post-review-btn">Post Review</button>
-    </form>
+    </form>  
+    <% } else { %>
+    <p class="rf-field">Please <a href="/login">log in</a> to leave a review.</p>
+  <% } %>
   </div>
- 
+
+
 </main>
+
+<footer id="reviews-posted">
+  Reviews reflect the opinions of individual customers, some of whom we are actively
+  in mediation with. Large Motors reserves the right to respond.
+</footer>
+

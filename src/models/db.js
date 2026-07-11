@@ -7,14 +7,40 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-console.log("the url:" + process.env.DB_URL)
+
+const normalizeDatabaseUrl = (value) => {
+    if (!value) {
+        throw new Error('DB_URL is not configured');
+    }
+
+    const schemeEnd = value.indexOf('://');
+    const credentialStart = schemeEnd + 3;
+    const passwordSeparator = value.indexOf(':', credentialStart);
+    const hostSeparator = value.lastIndexOf('@');
+
+    if (schemeEnd === -1 || passwordSeparator === -1 || hostSeparator === -1 || passwordSeparator > hostSeparator) {
+        return value;
+    }
+
+    const password = value.slice(passwordSeparator + 1, hostSeparator);
+    let decodedPassword = password;
+    try {
+        decodedPassword = decodeURIComponent(password);
+    } catch {
+        // Leave malformed percent escapes untouched; encodeURIComponent below makes them safe.
+    }
+
+    return `${value.slice(0, passwordSeparator + 1)}${encodeURIComponent(decodedPassword)}${value.slice(hostSeparator)}`;
+};
+
+const dbConnectionString = normalizeDatabaseUrl(process.env.DB_URL);
 
 // Read the CA certificate content
 const caCert = fs.readFileSync(path.join(__dirname, '../../bin', 'byuicse-psql-cert.pem'));
 
 // Create a new pool with SSL configuration
 const pool = new Pool({
-    connectionString: process.env.DB_URL,
+    connectionString: dbConnectionString,
     ssl: {
         ca: caCert,  // Use the certificate content, not the file path
         rejectUnauthorized: true,  // Keep this true for proper security
@@ -69,4 +95,4 @@ if (process.env.NODE_ENV?.includes('dev') && process.env.ENABLE_SQL_LOGGING === 
 }
 
 export default db;
-export { caCert };
+export { caCert, dbConnectionString };

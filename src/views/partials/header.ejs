@@ -3,24 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Large Motors — Vehicles of Questionable-Free Quality - <%= title %></title>
+<title>Large Motors - <%= title %></title>
 <link rel="stylesheet" href="/css/mainstyle.css">
 </head>
-<body>
-
+<body<% if (typeof pageClass !== 'undefined' && pageClass) { %> class="<%= pageClass %>"<% } %>>
+<!-- — Vehicles of Questionable-Free Quality - -->
 <div class="bunting"></div>
 
 <header>
   <div class="logo">LARGE MOTORS</div>
   <div class="tagline">
-    <span>Big Lot.</span><span>Big Savings.</span><span>Big Trust.</span> <span> <%= title %></span>
+    <span>Big Lot.</span><span>Big Savings.</span><span>Big Trust.</span> 
   </div>
 </header>
 
 <nav>
-  <a href="#inventory">Inventory</a>
-  <a href="#quality">Our Promise</a>
-  <a href="#testimonials">Testimonials</a>
-  <a href="#faq">FAQ</a>
-  <a href="#visit">Visit The Lot</a>
+  <a href="/vehicles">Vehicles</a>
+  <a href="/account">Account</a>
+  <a href="/blog">News</a>
+  <a href="/">Home</a>
+  <% if (typeof session !== 'undefined' && session.user && session.user.isAdmin) { %>
+    <a href="/contacts">Contacts</a>
+    <a href="/service">Service</a>
+  <% } %>
+  <% if (typeof session !== 'undefined' && session.user) { %>
+    <p>Welcome, <%= session.user.username %>! (<a href="/logout">Logout</a>)</p>
+  <% } %>
 </nav>

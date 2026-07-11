@@ -1,35 +1,35 @@
-import db from "db.js";
+import db from "./db.js";
 
 const getBlogById = async (id) => {
-    const query = 'SELECT blogs.*, users.id as author_id, users.name as author FROM blogs JOIN users ON blogs.author_id = users.id WHERE blogs.id = $1';
+    const query = 'SELECT blog_posts.*, users.id AS author_id, users.username AS author FROM blog_posts JOIN users ON blog_posts.author_id = users.id WHERE blog_posts.id = $1';
     const values = [id];
     const result = await db.query(query, values);
     return result.rows[0];
 }   
 
 const createBlog = async (title, content, authorId) => {
-    const query = 'INSERT INTO blogs (title, content, author_id) VALUES ($1, $2, $3) RETURNING *';
+    const query = 'INSERT INTO blog_posts (title, content, author_id) VALUES ($1, $2, $3) RETURNING *';
     const values = [title, content, authorId];
     const result = await db.query(query, values);
     return result.rows[0];
 }
 
 const updateBlog = async (id, title, content) => {
-    const query = 'UPDATE blogs SET title = $1, content = $2 WHERE id = $3 RETURNING *';
+    const query = 'UPDATE blog_posts SET title = $1, content = $2 WHERE id = $3 RETURNING *';
     const values = [title, content, id];
     const result = await db.query(query, values);
     return result.rows[0];
 }
 
 const deleteBlog = async (id) => {
-    const query = 'DELETE FROM blogs WHERE id = $1 RETURNING *';
+    const query = 'DELETE FROM blog_posts WHERE id = $1 RETURNING *';
     const values = [id];
     const result = await db.query(query, values);
     return result.rows[0];
 }
 
 const getAllBlogs = async () => {
-    const query = 'SELECT blogs.*, users.id as author_id, users.username as author FROM blogs JOIN users ON blogs.author_id = users.id';
+    const query = 'SELECT blog_posts.*, users.id AS author_id, users.username AS author FROM blog_posts JOIN users ON blog_posts.author_id = users.id';
     const result = await db.query(query);
     return result.rows;
 }
@@ -41,9 +41,9 @@ const createComment  = async (blog_id, user_id, content) => {
     return result.rows[0];
 }
 
-const updateComment = async(blog_id, content) =>{
-    const query = 'UPDATE blog_comments SET content = $1 WHERE id = $2 RETURNING *';
-    const values = [blog_id,content];
+const updateComment = async (id, comment) => {
+    const query = 'UPDATE blog_comments SET comment = $1 WHERE id = $2 RETURNING *';
+    const values = [comment, id];
     const result = await db.query(query, values);
     return result.rows[0];
 }

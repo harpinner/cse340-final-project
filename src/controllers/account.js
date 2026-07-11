@@ -1,5 +1,7 @@
 import { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser, getAllUsers, getUserByUsername } from "../models/users.js";
-import { getServiceRequestById, createServiceRequest, updateServiceRequestStatus, deleteServiceRequest, getAllServiceRequests, getServiceRequestsByUserId } from "../models/servicerequests.js";
+import { getServiceRequestById, createServiceRequest, updateServiceRequestStatus, deleteServiceRequest, getAllServiceRequests, getServiceRequestsByUserId, getServiceRequestTypes } from "../models/servicerequests.js";
+import { getContactById, createContact, getContactsByUserId, updateContact, deleteContact} from "../models/contacts.js";
+import { getAllVehicles, getVehicleById } from "../models/vehicles.js";
 import { Router } from "express";
 import { body, validationResult } from 'express-validator';
 import flash from 'express-flash-message';
@@ -10,7 +12,6 @@ const router = Router();
 const registrationValidationRules = [
     body('email').isEmail().withMessage('Invalid email address'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-    body('role').isIn(['user', 'admin']).withMessage('Invalid role'),
     body('username').notEmpty().withMessage('Username is required')
 ];
 
@@ -37,30 +38,39 @@ const validate = (req, res, next) => {
     next();
 };
 
+const contactStaff = async (req, res) => {
+    const { user_id, message } = req.body;
+    const newContact = await createContact(user_id, message);
+//    res.status(201).json({ message: 'Contact created successfully', contact: newContact });
+    res.flash('success', 'Your message has been sent to our staff. We will get back to you eventually.');
+    res.redirect('/account'); // Redirect to the account page after creating the contact
+}
+
 
 
 
 const register = async (req, res) => {
-    const { email, password, role, username } = req.body;
+    const { email, password, username } = req.body;
+    const role = 'customer';
     const existingUser = await getUserByUsername(username);
 
     if (existingUser) {
-        req.flash('error', 'User already exists');
-       // return res.status(400).json({ message: 'User already exists' });
+        res.flash('error', 'User already exists');
+        return res.redirect('/accounts/register');
     }
 
     const results = validationResult(req);
     if (!results.isEmpty()) {
-        req.flash('error', results.array().map(err => err.msg).join(', '));
+        res.flash('error', results.array().map(err => err.msg).join(', '));
         //return res.status(400).json({ errors: results.array() });
-        res.redirect('/register'); // Redirect back to the registration page with error messages
+        return res.redirect('/accounts/register'); // Redirect back to the registration page with error messages
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await createUser(email, hashedPassword, role, username);
     //res.status(201).json({ message: 'User created successfully', user: newUser });
     
-    res.redirect('/login'); // Redirect to the login page after successful registration
+    res.redirect('/accounts/login'); // Redirect to the login page after successful registration
 };
 
 
@@ -69,22 +79,28 @@ const login = async (req, res) => {
     const user = await getUserByUsername(username);
     const passwordMatch = user ? await bcrypt.compare(password, user.password) : false;
     if (!user) {
-        req.flash('error', 'Invalid username or password');
-        res.redirect('/login');     
+        res.flash('error', 'Invalid username or password');
+        return res.redirect('/accounts/login');
     }
     if (!passwordMatch) {
        // return res.status(401).json({ message: 'Invalid username or password' });
-        req.flash('error', 'Invalid username or password');
-        res.redirect('/login');     
+        res.flash('error', 'Invalid username or password');
+        return res.redirect('/accounts/login');
     }
     if(user.username === username && passwordMatch){
 
-        delete user.password; // Remove password from user object before sending response
+        delete user.password; // Remove password from user object before storing it in the session
 
         req.session.user = user; // Store user in session
 
        // res.status(200).json({ message: 'Login successful', user });
-        res.render('placeholder', { title: 'Home' });
+        const previousUrl = req.headers.referer;   
+        if(previousUrl) {
+                res.redirect(previousUrl); // Redirect back to the vehicle detail page after creating the service request
+        } else {
+            
+                res.redirect('/account'); // Redirect to the account page after creating the service request
+        }
     }
 }
 
@@ -104,11 +120,11 @@ const updatePassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     const updatedUser = await updateUserPassword(id, hashedPassword);
     if (!updatedUser) {
-        req.flash('error', 'User not found');
+        res.flash('error', 'User not found');
         //return res.status(404).json({ message: 'User not found' });
         res.redirect('/update-password');
     }
-    req.flash('success', 'Password updated successfully');
+    res.flash('success', 'Password updated successfully');
     res.redirect('/login');
 }
 
@@ -121,7 +137,10 @@ const userDashboard = async (req, res) => {
     const userId = req.session.user.id;
     const user = await getUserById(userId);
     const serviceRequests = await getServiceRequestsByUserId(userId);
-    res.render('account', { title: 'Account', user: user, serviceRequests: serviceRequests });
+    const serviceRequestTypes = await getServiceRequestTypes();
+    const vehicles = await getAllVehicles();
+    const contacts = await getContactsByUserId(userId);
+    res.render('account', { title: 'Account', user: user, serviceRequests: serviceRequests, serviceRequestTypes: serviceRequestTypes, vehicles: vehicles, contacts: contacts });
     //res.status(200).json({ user, serviceRequests });
 
 }
@@ -136,9 +155,34 @@ const requestService = async (req, res) => {
 
     const userId = req.session.user.id;
     const { description, vehicle_id, service_type } = req.body;
-    const newServiceRequest = await createServiceRequest(userId, description);
+    const vehicle = await getVehicleById(vehicle_id);
+
+    if (!vehicle) {
+        res.flash('error', 'Please select a vehicle that is currently in inventory.');
+        return res.redirect('/account');
+    }
+
+    try {
+        await createServiceRequest(userId, vehicle.id, service_type, description);
+    } catch (error) {
+        // The vehicle could have been removed after the lookup above.
+        if (error.code === '23503') {
+            res.flash('error', 'That vehicle is no longer available. Please choose another vehicle.');
+            return res.redirect('/account');
+        }
+        throw error;
+    }
    // res.status(201).json({ message: 'Service request created successfully', serviceRequest: newServiceRequest });
+   
     res.redirect('/account'); // Redirect to the account page after creating the service request
+}
+
+const loginPage = (req, res) => {
+    res.render('forms/login', { title: 'Login' });
+}
+
+const registrationPage = (req, res) => {
+    res.render('forms/register', { title: 'Create an Account' });
 }
 
 
@@ -163,13 +207,17 @@ const updateServiceRequestStatusById = async (req, res) => {
     res.redirect('/account'); // Redirect to the account page after updating the service request status
 }
 
+router.get('/register', registrationPage);
 router.post('/register', registrationValidationRules, validate, register);
+router.get('/login', loginPage);
 router.post('/login', loginValidationRules, validate, login);
+router.get('/', userDashboard);
 router.post('/logout', logout);
 router.put('/users/:id/password', updatePasswordValidationRules, validate, updatePassword);
 router.get('/users/', userDashboard);
 router.post('/service-requests', serviceRequestValidationRules, validate, requestService);
 router.delete('/service-requests/:id', deleteServiceRequestById);
 router.put('/service-requests/:id/status', updateServiceRequestStatusById);
+router.post('/contact', contactStaff);
 
 export default router;

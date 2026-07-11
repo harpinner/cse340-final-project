@@ -17,7 +17,7 @@ const getUserByUsername = async (username) => {
 }
 
 const createUser = async (email, passwordHash, role, username) => {
-    const query = 'INSERT INTO users (email, password_hash, role, username) VALUES ($1, $2, $3, $4) RETURNING *';
+    const query = 'INSERT INTO users (email, password, role, username) VALUES ($1, $2, $3, $4) RETURNING *';
     const values = [email, passwordHash, role, username];
     const result = await db.query(query, values);
     return result.rows[0];
@@ -40,7 +40,7 @@ const updateUser = async (id, email, role, username) => {
 
 
 const updateUserPassword = async (id, newPasswordHash) => {
-    const query = 'UPDATE users SET password_hash = $1 WHERE id = $2 RETURNING *';
+    const query = 'UPDATE users SET password = $1 WHERE id = $2 RETURNING *';
     const values = [newPasswordHash, id];
     const result = await db.query(query, values);
     return result.rows[0];

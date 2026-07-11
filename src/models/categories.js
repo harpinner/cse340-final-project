@@ -7,9 +7,9 @@ const getCategoryById = async (id) => {
     return result.rows[0];
 }
 
-const createCategory = async (name) => {
-    const query = 'INSERT INTO categories (name) VALUES ($1) RETURNING *';
-    const values = [name];
+const createCategory = async (name, description) => {
+    const query = 'INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING *';
+    const values = [name, description];
     const result = await db.query(query, values);
     return result.rows[0];
 }
