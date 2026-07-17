@@ -27,6 +27,7 @@
     "express-flash-message": "^3.0.2",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.2",
+    "method-override": "^3.0.0",
     "multer": "^2.2.0",
     "pg": "^8.22.0"
   }

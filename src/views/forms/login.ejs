@@ -7,8 +7,11 @@
       <h1 id="login-heading"><%= title %></h1>
       <p class="sub">Sign in to check on your account and service requests.</p>
 
-      <% if (typeof error !== 'undefined' && error) { %>
-        <p class="error-text" role="alert"><%= error %></p>
+      <% const errors = getFlashMessages('error'); %>
+      <% if (errors && errors.length) { %>
+        <% errors.forEach(function (message) { %>
+          <p class="error-text" role="alert"><%= message %></p>
+        <% }); %>
       <% } %>
 
       <form action="/accounts/login" method="post">

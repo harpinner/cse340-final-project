@@ -10,11 +10,13 @@ import flash from 'express-flash-message';
 import routes from './src/controllers/routes.js';
 import { addLocalVariables } from './src/middleware/globals.js';
 import setupDatabase from './src/models/setup.js';
+import methodOverride from 'method-override';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(methodOverride((req) => req.body?._method));
 
 
 // Initialize PostgreSQL session store
