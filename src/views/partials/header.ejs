@@ -22,9 +22,12 @@
   <a href="/account">Account</a>
   <a href="/blog">News</a>
   <a href="/">Home</a>
-  <% if (typeof session !== 'undefined' && session.user && session.user.isAdmin) { %>
+  <% if (typeof session !== 'undefined' && session.user && (session.user.role === 'admin' || session.user.role === 'employee')) { %>
     <a href="/contacts">Contacts</a>
-    <a href="/service">Service</a>
+    <a href="/services">Service</a>
+  <% } %>
+  <% if (typeof session !== 'undefined' && session.user && session.user.role === 'admin') { %>
+    <a href="/admin">Admin</a>
   <% } %>
   <% if (typeof session !== 'undefined' && session.user) { %>
     <p>Welcome, <%= session.user.username %>! (<a href="/logout">Logout</a>)</p>

@@ -27,14 +27,15 @@
       <tbody>
         <% serviceRequests.forEach(function(request) { %>
         <tr>
+          <form method="post" hidden="" action="/service-requests/<%= request.id %>"></form>
           <td><strong><%= request.make %> <%= request.model %> <%= request.year %></strong></td>
           <td><a href="mailto:<%= request.email %>"><%= request.username %></a></td>
           <td><%= request.service_type %></td>
           <td><span class="status-pill status-<%= request.status %>"><%= request.status %></span></td>
-          <td class="row-notes"><%= request.request_description %></td>
+          <td class="row-notes"><input type="text" name="description" id=""><%= request.request_description %></td>
           <td><%= request.request_created_at %></td>
           <td>
-            <form method="put" action="/service-requests/<%= request.id %>">
+            
               <div class="request-actions">
                 <select class="status-select" name="status">
                   <option value="requested">Requested</option>

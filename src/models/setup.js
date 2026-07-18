@@ -26,6 +26,17 @@ const repairSeedImageUrls = async () => {
     `);
 };
 
+const repairMisplacedVehicleCategories = async () => {
+    await db.query(`
+        UPDATE vehicles AS vehicle
+        SET category_id = category.id,
+            description = NULL
+        FROM categories AS category
+        WHERE vehicle.category_id IS NULL
+          AND vehicle.description = category.id::text
+    `);
+};
+
 const setupDatabase = async () => {
 
 
@@ -42,6 +53,7 @@ const setupDatabase = async () => {
 
     if (hasData) {
         await repairSeedImageUrls();
+        await repairMisplacedVehicleCategories();
         console.log('Database already has data. Skipping setup.');
         return;
     }
@@ -53,6 +65,7 @@ const setupDatabase = async () => {
         const sql = fs.readFileSync(sqlFilePath, 'utf8');
         await db.query(sql);
         await repairSeedImageUrls();
+        await repairMisplacedVehicleCategories();
         console.log('Database setup completed successfully.');
     } catch (error) {
         console.error('Error setting up the database:', error);

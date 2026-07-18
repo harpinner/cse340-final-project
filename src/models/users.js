@@ -53,6 +53,13 @@ const deleteUser = async (id) => {
     return result.rows[0];
 }
 
+const updateUserRole = async (id, role) => {
+    const query = 'UPDATE users SET role = $1 WHERE id = $2 RETURNING *';
+    const values = [role, id];
+    const result = await db.query(query, values);
+    return result.rows[0];
+}
+
 
 const getAllUsers = async () => {
     const query = 'SELECT * FROM users';
@@ -60,4 +67,4 @@ const getAllUsers = async () => {
     return result.rows;
 };
 
-export { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser, getAllUsers, getUserByUsername, updateUser };
+export { getUserByEmail, createUser, getUserById, updateUserPassword, deleteUser, getAllUsers, getUserByUsername, updateUser, updateUserRole };

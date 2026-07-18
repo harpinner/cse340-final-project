@@ -3,7 +3,7 @@
  * Middleware to add local variables to res.locals for use in all templates.
  * Templates can access these values but are not required to use them.
  */
-const addLocalVariables = (req, res, next) => {
+const addLocalVariables = async (req, res, next) => {
     
  
     // Make NODE_ENV available to all templates
@@ -16,6 +16,7 @@ const addLocalVariables = (req, res, next) => {
     // Always provide an object so anonymous visitors can render safely.
     res.locals.session = req.session || {};
 
+   // res.locals.messages = messages;
     // Convenience variable for UI state based on session state
     res.locals.isLoggedIn = false;
     if (req.session && req.session.user) {

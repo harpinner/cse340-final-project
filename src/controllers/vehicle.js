@@ -14,7 +14,7 @@ const router = Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const uploadDir = path.join(__dirname, 'public', 'images', 'vehicles');
+const uploadDir = path.join(__dirname, '..', '..', 'public', 'images', 'vehicles');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -25,8 +25,22 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + path.extname(file.originalname);
-    cb(null, uniqueName);
+    const slug = (value) => String(value || 'vehicle')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    const baseName = [slug(req.body.make), slug(req.body.model), slug(req.body.year)].join('-');
+    const extension = path.extname(file.originalname).toLowerCase();
+    let sequence = 1;
+    let filename = `${baseName}-${sequence}${extension}`;
+
+    while (fs.existsSync(path.join(uploadDir, filename))) {
+      sequence += 1;
+      filename = `${baseName}-${sequence}${extension}`;
+    }
+
+    cb(null, filename);
   }
 });
 
@@ -40,18 +54,17 @@ const getVehicle = async (req, res) => {
         return res.status(404).json({ message: 'Vehicle not found' });
     }
     const reviews = await getReviewsByVehicleId(id);
-    const vehicleImage = await getVehicleImageByVehicleId(id);
     // res.status(200).json(vehicle);
-    res.render('vehicleDetail', { title: 'Vehicle Detail', vehicle: vehicle, reviews: reviews, vehicleImage: vehicleImage });
+    res.render('vehicleDetail', { title: 'Vehicle Detail', vehicle: vehicle, reviews: reviews });
 }
     
 const createNewVehicle = async (req, res) => {
-    const { make, model, year, price} = req.body;
+    const { make, model, year, price, category, description } = req.body;
 
     const imagePath = req.file ? `/images/vehicles/${req.file.filename}` : null;
 
 
-    const newVehicle = await createVehicle(make, model, year, price);
+    const newVehicle = await createVehicle(make, model, year, price, category, description);
     if (imagePath) {
         await createVehicleImage(newVehicle.id, imagePath);
     }   
@@ -61,8 +74,8 @@ const createNewVehicle = async (req, res) => {
 
 const updateVehicle = async (req, res) => {
     const { id } = req.params;
-    const { make, model, year, price } = req.body;
-    const updatedVehicle = await updateVehicleInDb(id, make, model, year, price);
+    const { make, model, year, price, category, description } = req.body;
+    const updatedVehicle = await updateVehicleInDb(id, make, model, year, price, category, description);
     if (!updatedVehicle) {
         return res.status(404).json({ message: 'Vehicle not found' });
     }

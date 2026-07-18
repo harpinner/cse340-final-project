@@ -19,11 +19,11 @@
     <% contacts.forEach(function(contact) { %>
       <div class="message-card">
         <div class="message-head">
-          <div class="message-sender"><%= contact.user_id %></div>
+          <div class="message-sender"><%= contact.username %></div>
           <div class="message-date"><%= contact.created_at %></div>
         </div>
         <p class="message-body"><%= contact.message %></p>
-        <div class="message-sender"><a href="mailto:<%= contact.email %>">Message Back</a></div>
+        <div class="message-sender"><a href="mailto:<%= contact.email %>">Message Back: <%= contact.email %></a></div>
         <div class="message-sender"><a href="/contacts/<%= contact.id %>/delete" class="delete-btn" style="border-color:var(--flag-red); color:var(--flag-red);">Delete</a></div>
       </div>
     <% }); %>
@@ -43,11 +43,7 @@
 
 </main>
 
-<footer>
-  LARGE MOTORS — mirrors the contacts table (user_id, message, created_at). This page
-  has no JavaScript: the form submits natively and, without a real backend attached,
-  just reloads the page rather than adding a new message.
-</footer>
+
 
 </body>
 </html>

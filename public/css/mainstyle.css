@@ -1383,7 +1383,8 @@ button.cancel-btn{
   gap:16px;
 }
 
-.post-card{
+.post-card,
+.entry-card{
   background:var(--paper);
   color:var(--ink);
   border:2px solid var(--ink);
@@ -1392,7 +1393,8 @@ button.cancel-btn{
   cursor:pointer;
 }
 
-.post-card:hover{
+.post-card:hover,
+.entry-card:hover{
   background:#ece2c6;
 }
 
@@ -1568,16 +1570,19 @@ button.add-comment-btn:hover{
 
 /* --- No-JS variant: <details>/<summary>-based post cards --- */
 
-.post-card > summary{
+.post-card > summary,
+.entry-card > summary{
   cursor:pointer;
   list-style:none;
 }
 
-.post-card > summary::-webkit-details-marker{
+.post-card > summary::-webkit-details-marker,
+.entry-card > summary::-webkit-details-marker{
   display:none;
 }
 
-.post-card > summary::marker{
+.post-card > summary::marker,
+.entry-card > summary::marker{
   content:"";
 }
 
@@ -1988,4 +1993,202 @@ button.add-comment-btn:hover{
   align-items:center;
   gap:8px;
   flex-wrap:wrap;
+}
+
+
+/* =======================================================================
+   PAGE: Admin — Users & Categories (body.page-admin)
+   ======================================================================= */
+
+.two-col-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+  align-items:start;
+}
+
+@media (max-width:900px){
+  .two-col-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+.col-heading{
+  font-family:'Impact','Arial Black',sans-serif;
+  font-size:1.2rem;
+  color:var(--lot-yellow);
+  margin:0 0 14px;
+  letter-spacing:0.5px;
+}
+
+.role-pill{
+  display:inline-block;
+  padding:2px 9px;
+  border-radius:10px;
+  font-size:0.7rem;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+.role-admin{
+  background:#f2d4d0;
+  color:var(--flag-red);
+}
+
+.role-staff{
+  background:#dbe3ec;
+  color:var(--flag-blue);
+}
+
+.role-customer{
+  background:#dcecd4;
+  color:var(--ok-green);
+}
+
+.inline-edit-form{
+  display:none;
+}
+
+tr.editing .row-view{
+  display:none;
+}
+
+tr.editing .inline-edit-form{
+  display:table-row;
+}
+
+.inline-edit-row td{
+  padding:10px 12px;
+  background:#ece2c6;
+}
+
+.inline-edit-row .field-inline{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+.inline-edit-row input,
+.inline-edit-row select{
+  background:var(--paper);
+  color:var(--ink);
+  border:2px solid var(--ink);
+  border-radius:3px;
+  padding:6px 8px;
+  font-family:inherit;
+  font-size:0.8rem;
+}
+
+button.small-save-btn{
+  background:var(--ok-green);
+  color:white;
+  border:2px solid var(--ink);
+  border-radius:4px;
+  padding:6px 12px;
+  font-family:inherit;
+  font-size:0.75rem;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button.small-save-btn:hover{
+  background:#3a5f2f;
+}
+
+button.small-cancel-btn{
+  background:none;
+  border:1px solid #7a7261;
+  color:#3a3628;
+  border-radius:4px;
+  padding:6px 12px;
+  font-family:inherit;
+  font-size:0.75rem;
+  cursor:pointer;
+}
+
+
+/* --- No-JS variant: users & categories entry cards --- */
+
+.entry-summary-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.entry-title{
+  font-weight:bold;
+  font-size:0.95rem;
+}
+
+.entry-sub{
+  font-size:0.8rem;
+  color:#5a5548;
+}
+
+.entry-edit-area{
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px dashed #b8ac8a;
+  cursor:default;
+}
+
+.entry-edit-area .field-grid{
+  margin-bottom:12px;
+}
+
+.entry-delete-form{
+  display:inline-block;
+  margin-left:10px;
+}
+
+
+/* --- No-JS variant: table rows bound to external <form> via form="" attr --- */
+
+.row-form-shell{
+  margin:0;
+  height:0;
+  overflow:hidden;
+}
+
+.table-input,
+.table-select,
+.table-textarea{
+  background:var(--paper);
+  color:var(--ink);
+  border:2px solid var(--ink);
+  border-radius:3px;
+  padding:6px 8px;
+  font-family:inherit;
+  font-size:0.8rem;
+  width:100%;
+}
+
+.table-textarea{
+  min-height:38px;
+  resize:vertical;
+}
+
+td.actions-cell{
+  white-space:nowrap;
+}
+
+td.actions-cell form{
+  display:inline;
+}
+
+.vehicle-image{
+  max-width:100%;
+  max-height:100%;
+  object-fit:cover;
+}
+
+
+.photo-frame img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:cover;
+  
 }

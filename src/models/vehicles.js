@@ -1,22 +1,22 @@
 import db from "./db.js";
 
 const getVehicleById = async (id) => {
-    const query = 'SELECT * FROM vehicles WHERE id = $1';
+    const query = 'SELECT DISTINCT ON (v.id) v.*, c.name AS category, vi.image_url FROM vehicles v LEFT JOIN categories c ON c.id = v.category_id LEFT JOIN vehicle_images vi ON v.id = vi.vehicle_id WHERE v.id = $1';
     const values = [id];
     const result = await db.query(query, values);
     return result.rows[0];
 }
 
-const createVehicle = async (make, model, year, price) => {
-    const query = 'INSERT INTO vehicles (make, model, year, price) VALUES ($1, $2, $3, $4) RETURNING *';
-    const values = [make, model, year, price];
+const createVehicle = async (make, model, year, price, categoryId, description) => {
+    const query = 'INSERT INTO vehicles (make, model, year, price, category_id, description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
+    const values = [make, model, year, price, categoryId, description];
     const result = await db.query(query, values);
     return result.rows[0];
 }
 
-const updateVehicle = async (id, make, model, year, price) => {
-    const query = 'UPDATE vehicles SET make = $1, model = $2, year = $3, price = $4 WHERE id = $5 RETURNING *';
-    const values = [make, model, year, price, id];
+const updateVehicle = async (id, make, model, year, price, categoryId, description) => {
+    const query = 'UPDATE vehicles SET make = $1, model = $2, year = $3, price = $4, category_id = $5, description = $6 WHERE id = $7 RETURNING *';
+    const values = [make, model, year, price, categoryId, description, id];
     const result = await db.query(query, values);
     return result.rows[0];
 }
@@ -29,7 +29,7 @@ const deleteVehicle = async (id) => {
 }
 
 const getAllVehicles = async () => {
-    const query = 'SELECT DISTINCT ON (v.id) v.*, vi.image_url FROM vehicles v LEFT JOIN vehicle_images vi ON v.id = vi.vehicle_id ORDER BY v.id, vi.id ASC;';
+    const query = 'SELECT DISTINCT ON (v.id) v.*, c.name AS category, vi.image_url FROM vehicles v LEFT JOIN categories c ON c.id = v.category_id LEFT JOIN vehicle_images vi ON v.id = vi.vehicle_id ORDER BY v.id, vi.id ASC;';
     const result = await db.query(query);
     return result.rows;
 }

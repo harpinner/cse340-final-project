@@ -1,0 +1,133 @@
+<%- include('../partials/header') %>
+
+
+<header>
+  <p>Back Office — Users &amp; Categories</p>
+  <span class="badge-office">ADMINISTRATORS ONLY</span>
+</header>
+<% var messages = getFlashMessages() %>
+<main>
+
+    <% if (messages && messages.length > 0) { %>
+  <% messages.forEach(msg => { %>
+    <% if (msg.type === 'error') { %>
+      <div class="status-msg show" style="color:var(--flag-red); display:block; margin-bottom:16px;">
+        <%= msg %>
+      </div>
+    <% } else { %>
+      <div class="status-msg show" style="display:block; margin-bottom:16px;">
+        <%= msg %>
+      </div>
+    <% } %>
+  <% }) %>
+  <% } %>
+
+  <% if (typeof messages !== 'undefined' && messages.error && messages.error.length) { %>
+    <div class="status-msg show" style="color:var(--flag-red); display:block; margin-bottom:16px;">
+      <% messages.error.forEach(function(message) { %><%= message %><br><% }) %>
+    </div>
+  <% } %>
+  <% if (typeof messages !== 'undefined' && messages.success && messages.success.length) { %>
+    <div class="status-msg show" style="display:block; margin-bottom:16px;">
+      <% messages.success.forEach(function(message) { %><%= message %><br><% }) %>
+    </div>
+  <% } %>
+
+  <div class="two-col-grid">
+
+    <!-- ===================== USERS COLUMN ===================== -->
+    <div>
+      <h2 class="col-heading">Users</h2>
+
+
+      <p class="inv-count"><%= users.length %> users on file. <% if (typeof messages !== 'undefined' && messages.info && messages.info.length) { %><span></span> <% } %></p>
+     
+
+      <div class="inv-table-wrap" id="users-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody><% for (let user of users) { %>
+        <tr>
+          <td><strong><%= user.username %></strong></td>
+          <td><%= user.email %></td>
+          <td>
+            <form method="post" action="/admin/users/<%= user.id %>" class="role-change-form">
+              <select class="table-select" name="role">
+                  <option value="employee" <% if (user.role === 'employee') { %>selected<% } %>>staff</option>
+                  <option value="customer" <% if (user.role === 'customer') { %>selected<% } %>>customer</option>
+                  <option value="admin" <% if (user.role === 'admin') { %>selected<% } %>>admin</option>
+              </select>
+              <input type="hidden" name="_method" value="PUT">
+              <button type="submit" class="small-save-btn">Update Role</button>
+            </form>
+          </td>
+          
+        </tr>
+        <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===================== CATEGORIES COLUMN ===================== -->
+    <div>
+      <h2 class="col-heading">Categories</h2>
+
+      <div class="panel">
+        <form method="post" action="/admin/categories">
+          <div class="field-grid">
+            <div class="field full">
+              <label for="c-name">Name</label>
+              <input type="text" id="c-name" name="name" placeholder="Convertible" required>
+            </div>
+            <div class="field full">
+              <label for="c-description">Description <span class="hint">(optional)</span></label>
+              <textarea id="c-description" name="description" placeholder="Top comes off, prices go up."></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">Add Category</button>
+          </div>
+        </form>
+      </div>
+
+      <p class="inv-count">4 categories on file.</p>
+
+      <div class="inv-table-wrap" id="categories-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let category of categories) { %>
+        <tr>
+          <td><strong><%= category.name %></strong></td>
+          <td class="row-notes"><%= category.description %></td>
+          <td class="actions-cell">
+            <a href="/admin/categories/<%= category.id %>" class="delete-btn edit-link">Edit</a>
+            <form method="post" action="/admin/categories/<%= category.id %>" class="delete-form">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="delete-btn">Remove</button>
+            </form>
+          </td>
+        </tr>
+        <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+<%- include('../partials/footer') %>

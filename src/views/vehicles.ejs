@@ -23,17 +23,17 @@
         <!-- FIX: Added name attributes to all inputs below -->
         <div class="field">
           <label for="make">Make</label>
-          <input type="text" id="make" name="make" placeholder="Meridian" required>
+          <input type="text" id="make" name="make" placeholder="Make" required>
         </div>
 
         <div class="field">
           <label for="model">Model</label>
-          <input type="text" id="model" name="model" placeholder="Coupe" required>
+          <input type="text" id="model" name="model" placeholder="Model" required>
         </div>
 
         <div class="field">
           <label for="year">Year</label>
-          <input type="number" id="year" name="year" min="1970" max="2027" placeholder="2014" required>
+          <input type="number" id="year" name="year" min="1930" max="2027" placeholder="2014" required>
         </div>
 
         <div class="field">
@@ -44,8 +44,11 @@
         <div class="field">
           <label for="category">Category</label>
           <select id="category" name="category" required>
-            <option value="" disabled selected>Select a category</option>
-            <!-- Tip: You'll likely want to loop through your categories here too -->
+            <% for (const category of categories) { %>
+              <option value="<%= category.id %>"><%= category.name %></option>
+            <% } %>
+            <!--<option value="" disabled selected>Select a category</option>
+             Tip: You'll likely want to loop through your categories here too -->
           </select>
         </div>
 
@@ -94,6 +97,7 @@
             <% if (typeof editedVehicleId !== 'undefined' && vehicle.id === editedVehicleId) { %>
                 <td colspan="6" class="edit-row">
                     <form class="edit-form" method="post" action="/vehicles/edit/<%= vehicle.id %>">
+                      <input type="hidden" name="_method" value="PUT">
                       <input type="text" name="make" value="<%= vehicle.make %>" required>
                       <input type="text" name="model" value="<%= vehicle.model %>" required>
                       <input type="number" name="year" value="<%= vehicle.year %>" min="1970" max="2027" required>
@@ -112,11 +116,10 @@
                 <td><%= vehicle.category %></td>
                 <td>$<%= Number(vehicle.price).toFixed(2) %></td>
                 <td><%= vehicle.description %></td>
-                <td><img src="<%= vehicle.image_url %>" alt="<%= vehicle.make + ' ' + vehicle.model %>" class="vehicle-image" width="200"></td>
+                <td><img src="<%= vehicle.image_url %>" alt="<%= vehicle.make + ' ' + vehicle.model %>" class="vehicle-image"></td>
                 <% if (session.user && session.user.role === 'admin' || session.user && session.user.role === 'employee') { %>
                   <td>
                     <a href="/vehicles/edit/<%= vehicle.id %>/" class="btn btn-primary">Edit</a>
-                    <a href="/vehicles/delete/<%= vehicle.id %>/" class="btn btn-danger">Delete</a>
                   </td>
                 <% }  %>
                   
