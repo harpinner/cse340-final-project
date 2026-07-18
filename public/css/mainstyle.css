@@ -2179,6 +2179,29 @@ td.actions-cell form{
   display:inline;
 }
 
+
+/* --- Users/categories table: inline role form + edit link --- */
+
+.role-change-form{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+a.edit-link{
+  text-decoration:none;
+  display:inline-block;
+  border-color:var(--flag-blue);
+  color:var(--flag-blue);
+}
+
+td.actions-cell a,
+td.actions-cell form{
+  display:inline-block;
+  vertical-align:middle;
+}
+
 .vehicle-image{
   max-width:100%;
   max-height:100%;

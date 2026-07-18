@@ -76,6 +76,19 @@ const updateCategoryHandler = async (req, res) => {
     res.redirect('/admin');
 }
 
+const getCategoryByIdHandler = async (req, res) => {
+    const { id } = req.params;
+    const category = await getCategoryById(id);
+    if (!category) {
+        res.flash('error', 'Category not found');
+        return res.redirect('/admin');
+    }
+    res.render('forms/category', { title: 'Edit Category', category });
+}
+
+
+
+
 const deleteCategoryHandler = async (req, res) => {
     const { id } = req.params;
     const deletedCategory = await deleteCategory(id);
@@ -91,6 +104,7 @@ const deleteCategoryHandler = async (req, res) => {
 
 router.get('/', index);
 router.get('/users/:id', editUser);
+router.get('/categories/:id', getCategoryByIdHandler);
 router.post('/categories', createNewCategory);
 router.put('/categories/:id', updateCategoryHandler);
 router.delete('/categories/:id', deleteCategoryHandler);

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect x="0" y="0" width="32" height="32" rx="7" fill="#1f1c15"/>
+  <rect x="3" y="3" width="26" height="26" rx="5.5" fill="#f2c518"/>
+
+  <!-- car body -->
+  <rect x="5" y="13.5" width="22" height="7" rx="3" fill="#1f1c15"/>
+
+  <!-- cabin -->
+  <polygon points="13,8.5 20.5,8.5 23.5,14.5 8.5,14.5" fill="#1f1c15"/>
+
+  <!-- wheels -->
+  <circle cx="11" cy="20.5" r="4.2" fill="#1f1c15" stroke="#f2c518" stroke-width="1.4"/>
+  <circle cx="11" cy="20.5" r="1.68" fill="#f2c518"/>
+  <circle cx="21" cy="20.5" r="4.2" fill="#1f1c15" stroke="#f2c518" stroke-width="1.4"/>
+  <circle cx="21" cy="20.5" r="1.68" fill="#f2c518"/>
+</svg>

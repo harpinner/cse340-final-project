@@ -1,3 +1,36 @@
 <%- include('../partials/header') %>
 
+
+<header>
+  <p>Back Office — Edit Category</p>
+  <span class="badge-office">STAFF ONLY, PROBABLY FINE</span>
+</header>
+
+<main>
+
+  <div class="crumb"><a href="/admin">Users &amp; Categories</a> / Edit Category</div>
+
+  <h2 class="section-title">Edit Category</h2>
+  <div class="panel" style="max-width:520px;">
+    <form method="post" action="/admin/categories/<%= category.id %>">
+      <div class="field-grid">
+        <div class="field full">
+          <label for="c-name">Name</label>
+          <input type="text" id="c-name" name="name" value="<%= category.name %>" required>
+        </div>
+        <div class="field full">
+          <label for="c-description">Description <span class="hint">(optional)</span></label>
+          <textarea id="c-description" name="description"><%= category.description %></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <input type="hidden" name="_method" value="PUT">
+        <button type="submit" class="submit-btn">Save Changes</button>
+        </div>
+    </form>
+  </div>
+
+</main>
+
+
 <%- include('../partials/footer') %>
