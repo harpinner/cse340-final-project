@@ -32,7 +32,7 @@
           <td><a href="mailto:<%= request.email %>"><%= request.username %></a></td>
           <td><%= request.service_type %></td>
           <td><span class="status-pill status-<%= request.status %>"><%= request.status %></span></td>
-          <td class="row-notes"><input type="text" name="description" id=""><%= request.request_description %></td>
+          <td class="row-notes"><%= request.request_description %></td>
           <td><%= request.request_created_at %></td>
           <td>
             
