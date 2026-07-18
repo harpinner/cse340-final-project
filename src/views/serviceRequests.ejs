@@ -27,26 +27,27 @@
       <tbody>
         <% serviceRequests.forEach(function(request) { %>
         <tr>
-          <form method="post" hidden="" action="/service-requests/<%= request.id %>"></form>
           <td><strong><%= request.make %> <%= request.model %> <%= request.year %></strong></td>
           <td><a href="mailto:<%= request.email %>"><%= request.username %></a></td>
           <td><%= request.service_type %></td>
           <td><span class="status-pill status-<%= request.status %>"><%= request.status %></span></td>
           <td class="row-notes"><%= request.request_description %></td>
           <td><%= request.request_created_at %></td>
-          <td>
-            
-              <div class="request-actions">
-                <select class="status-select" name="status">
-                  <option value="requested">Requested</option>
-                  <option value="in_progress" selected>In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-                <button type="submit" class="delete-btn" style="border-color:var(--flag-blue); color:var(--flag-blue);">Update</button>
-              </div>
+           <td>
+             <form method="post" action="/services/<%= request.service_request_id %>/status">
+               <div class="request-actions">
+                 <select class="status-select" name="status">
+                   <option value="requested" <%= request.status === 'requested' ? 'selected' : '' %>>Requested</option>
+                   <option value="in_progress" <%= request.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                   <option value="completed" <%= request.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                   <option value="cancelled" <%= request.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                 </select>
+                 <button type="submit" class="delete-btn" style="border-color:var(--flag-blue); color:var(--flag-blue);">Update</button>
+               </div>
+             </form>
+             <form method="post" action="/services/<%= request.service_request_id %>/delete">
+               <button type="submit" class="delete-btn" style="border-color:var(--flag-red); color:var(--flag-red);">Delete</button>
             </form>
-            <a href="/service-requests/<%= request.id %>/delete" class="delete-btn" style="border-color:var(--flag-red); color:var(--flag-red);">Delete</a>
           </td>
         </tr>
         <% }); %>

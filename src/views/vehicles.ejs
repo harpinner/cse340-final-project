@@ -96,7 +96,7 @@
           <tr data-id="<%= vehicle.id %>">
             <% if (typeof editedVehicleId !== 'undefined' && vehicle.id === editedVehicleId) { %>
                 <td colspan="6" class="edit-row">
-                    <form class="edit-form" method="post" action="/vehicles/edit/<%= vehicle.id %>">
+                    <form class="edit-form" method="post" action="/vehicles/<%= vehicle.id %>">
                       <input type="hidden" name="_method" value="PUT">
                       <input type="text" name="make" value="<%= vehicle.make %>" required>
                       <input type="text" name="model" value="<%= vehicle.model %>" required>
@@ -104,7 +104,7 @@
                       <input type="number" name="price" value="<%= vehicle.price %>" min="0" step="0.01" required>
                       <select name="category" required>
                           <% categories.forEach(function(category) { %>
-                            <option value="<%= category %>" <%= category === vehicle.category ? 'selected' : '' %>><%= category %></option>
+                            <option value="<%= category.id %>" <%= category.id === vehicle.category_id ? 'selected' : '' %>><%= category.name %></option>
                           <% }); %>
                       </select>
                       <textarea name="description"><%= vehicle.description %></textarea>
@@ -117,11 +117,11 @@
                 <td>$<%= Number(vehicle.price).toFixed(2) %></td>
                 <td><%= vehicle.description %></td>
                 <td><img src="<%= vehicle.image_url %>" alt="<%= vehicle.make + ' ' + vehicle.model %>" class="vehicle-image"></td>
-                <% if (session.user && session.user.role === 'admin' || session.user && session.user.role === 'employee') { %>
+               
                   <td>
-                    <a href="/vehicles/edit/<%= vehicle.id %>/" class="btn btn-primary">Edit</a>
+                    <a href="/vehicles/<%= vehicle.id %>/" class="btn btn-primary">More Info</a>
                   </td>
-                <% }  %>
+               
                   
                
             

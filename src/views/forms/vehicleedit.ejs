@@ -1,0 +1,60 @@
+<%- include('../partials/header') %>
+
+<main>
+<h2 class="section-title" id="form-heading">Edit Vehicle</h2>
+  <div class="panel">
+    <!-- FIX: Added enctype for file upload -->
+    <form id="vehicle-form" method="post" action="/vehicles/<%= vehicle.id %>" enctype="multipart/form-data" novalidate>
+        <input type="hidden" id="method" name="_method" value="PUT">
+      <input type="hidden" id="vehicle-id" name="id" value="<%= vehicle.id %>">
+
+      <div class="field-grid">
+        <!-- FIX: Added name attributes to all inputs below -->
+        <div class="field">
+          <label for="make">Make</label>
+          <input type="text" id="make" name="make" placeholder="Make" value="<%= vehicle.make %>" required>
+        </div>
+
+        <div class="field">
+          <label for="model">Model</label>
+          <input type="text" id="model" name="model" placeholder="Model" value="<%= vehicle.model %>" required>
+        </div>
+
+        <div class="field">
+          <label for="year">Year</label>
+          <input type="number" id="year" name="year" min="1930" max="2027" placeholder="2014" value="<%= vehicle.year %>" required>
+        </div>
+
+        <div class="field">
+          <label for="price">Price <span class="hint">(USD)</span></label>
+          <input type="number" id="price" name="price" min="0" step="0.01" placeholder="2995.00" value="<%= vehicle.price %>" required>
+        </div>
+
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category" name="category" required>
+            <% for (const category of categories) { %>
+              <option value="<%= category.id %>"><%= category.name %></option>
+            <% } %>
+            <!--<option value="" disabled selected>Select a category</option>
+             Tip: You'll likely want to loop through your categories here too -->
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="image">Image</label>
+          <input type="file" id="image" name="image" accept="image/*" required>
+        </div>
+
+        <div class="field full">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" placeholder="Runs when warm, cold, or medium. Aftermarket duct-tape trim, matches interior."></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-btn" id="submit-btn">Update Vehicle</button>
+      </div>
+    </form>
+  </div>
+  <%- include('../partials/footer') %>

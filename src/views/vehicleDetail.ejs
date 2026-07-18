@@ -19,14 +19,19 @@
       <p class="vehicle-description">
         <%= vehicle.description %>
       </p>
+      <%if (session.user && session.user.role === 'admin' || session.user && session.user.role === 'employee') { %>
+        <div class="review">
+          <a href="/vehicles/edit/<%= vehicle.id %>/" class="delete-btn edit-link">Edit</a>
+        </div>
+      <% } %>
+     
 
-      <button class="contact-btn">Ask About This Vehicle</button>
     </div>
   </div>
 
   <h2 class="section-title">Customer Reviews</h2>
 
-  <!-- reviews JOIN users ON reviews.user_id = users.id WHERE vehicle_id = 1 -->
+
 
  <% var totalRating = 0; reviews.forEach(function(review) { totalRating += review.rating; }); var averageRating = totalRating / reviews.length; %>
  <div class="review-summary">
@@ -49,7 +54,7 @@
 <% reviews.forEach(function(review) { %>
     <div class="review">
       <div class="review-head">
-        <div class="reviewer"><%=review.user_name %></div>
+        <div class="reviewer"><%=review.username %></div>
         <div class="review-stars-row"><% for (let i = 0; i < review.rating; i++) { %>★<% } %></div>
       </div>
       <div class="review-date"><%=review.review_date %></div>
@@ -58,9 +63,9 @@
         <%=review.comment %>
       </p>
       <% if (session.user && session.user.id === review.user_id) { %>
-        <a href="/vehicles/<%= vehicleId %>/reviews/<%= review.id %>/edit">Edit</a>
-        <form method="post" action="/vehicles/<%= vehicleId %>/reviews/<%= review.id %>?_method=DELETE" onsubmit="return confirm('Are you sure you want to delete this review?');">
-          <button type="submit">Delete</button>
+        <form method="post" action="/vehicles/<%= vehicle.id %>/reviews/<%= review.id %>" >
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit" class="contact-btn">Delete</button>
         </form>
       <% } %>
     </div>
@@ -87,7 +92,7 @@
           <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label>
           <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label>
         </fieldset>
-        <div class="rating-fallback-note">Click a star to set your rating — no JavaScript needed.</div>
+        <div class="rating-fallback-note">Click a star to set your rating</div>
       </div>
       <div class="rf-field">
         <label for="rtext">Comment</label>

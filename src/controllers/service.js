@@ -1,6 +1,7 @@
 import { getServiceRequestById, createServiceRequest, updateServiceRequestStatus as updateServiceRequestStatusInDb, deleteServiceRequest as deleteServiceRequestInDb, getAllServiceRequests, getServiceRequestsByUserId } from "../models/servicerequests.js";
 import { Router } from "express";
 import { body, validationResult } from 'express-validator';
+import flash from 'express-flash-message';
 
 const router = Router();
 
@@ -19,17 +20,18 @@ const updateServiceRequestStatus = async (req, res) => {
     }
     //res.status(200).json(updatedServiceRequest);
 
-    res.redirect(`/service-requests/`); // Redirect to the service request detail page after updating the status
+    res.redirect('/services');
 };
 
 const deleteServiceRequest = async (req, res) => {
     const { id } = req.params;
     const deletedServiceRequest = await deleteServiceRequestInDb(id);
     if (!deletedServiceRequest) {
-        return res.status(404).json({ message: 'Service request not found' });
+        req.flash('error', 'Service request not found.');
+        return res.redirect('/services');
     }
     //res.status(200).json({ message: 'Service request deleted successfully' });
-    res.redirect(`/service-requests/`); // Redirect to the service request list page after deleting the request
+    res.redirect('/services');
 };
 
 const serviceRequestDetail = async (req, res) => {
@@ -63,13 +65,15 @@ const ServiceRequestForm = (req, res) => {
 }
 
 
-router.post('/', createNewServiceRequest);
+// Browser forms submit POST, so these routes do not depend on method override.
+router.post('/:id/status', updateServiceRequestStatus);
+router.post('/:id/delete', deleteServiceRequest);
 router.put('/:id/', updateServiceRequestStatus);
 router.delete('/:id', deleteServiceRequest);
-router.get('/:id', serviceRequestDetail);
+//router.get('/:id', serviceRequestDetail);
 router.get('/', ServiceRequestList);
-router.get('/user/:userId', ServiceRequestListByUser);
-router.get('/new', ServiceRequestForm);
+//router.get('/user/:userId', ServiceRequestListByUser);
+//router.get('/new', ServiceRequestForm);
 
 
 

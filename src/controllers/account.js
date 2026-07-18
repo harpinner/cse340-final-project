@@ -111,7 +111,7 @@ const logout = async (req, res) => {
 }
 
 const updatePassword = async (req, res) => {
-    results = validationResult(req);
+    const results = validationResult(req);
     if (!results.isEmpty()) {
         return res.status(400).json({ errors: results.array() });
     }
@@ -121,11 +121,10 @@ const updatePassword = async (req, res) => {
     const updatedUser = await updateUserPassword(id, hashedPassword);
     if (!updatedUser) {
         res.flash('error', 'User not found');
-        //return res.status(404).json({ message: 'User not found' });
-        res.redirect('/update-password');
+        return res.redirect('/account');
     }
     res.flash('success', 'Password updated successfully');
-    res.redirect('/login');
+    return res.redirect('/account');
 }
 
 const userDashboard = async (req, res) => {
@@ -214,8 +213,11 @@ router.post('/login', loginValidationRules, validate, login);
 router.get('/', userDashboard);
 router.post('/logout', logout);
 router.put('/users/:id/password', updatePasswordValidationRules, validate, updatePassword);
+router.put('/users/:id', updatePasswordValidationRules, validate, updatePassword);
 router.get('/users/', userDashboard);
 router.post('/service-requests', serviceRequestValidationRules, validate, requestService);
+router.post('/service-requests/:id/status', updateServiceRequestStatusById);
+router.post('/service-requests/:id/delete', deleteServiceRequestById);
 router.delete('/service-requests/:id', deleteServiceRequestById);
 router.put('/service-requests/:id/status', updateServiceRequestStatusById);
 router.post('/contact', contactStaff);

@@ -35,7 +35,20 @@ const getAllReviews = async () => {
 }
 
 const getReviewsByVehicleId = async (vehicleId) => {
-    const query = 'SELECT * FROM reviews WHERE vehicle_id = $1';
+    const query = `SELECT
+    r.id AS review_id,
+    r.vehicle_id,
+    r.rating,
+    r.comment,
+    r.created_at,
+    -- Reviewer details
+    u.id AS user_id,
+    u.username,
+    u.email,
+    u.role
+FROM reviews r
+JOIN users u ON r.user_id = u.id
+WHERE r.vehicle_id = $1;`;
     const values = [vehicleId];
     const result = await db.query(query, values);
     return result.rows;

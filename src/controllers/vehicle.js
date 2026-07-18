@@ -57,7 +57,14 @@ const getVehicle = async (req, res) => {
     // res.status(200).json(vehicle);
     res.render('vehicleDetail', { title: 'Vehicle Detail', vehicle: vehicle, reviews: reviews });
 }
-    
+
+const getVehicleEditForm = async (req, res) => {
+    const { id } = req.params;
+    const vehicle = await getVehicleById(id);
+    const categories = await getAllCategories();
+    res.render('forms/vehicleedit', { title: 'Edit Vehicle', vehicle: vehicle, categories: categories });
+};
+
 const createNewVehicle = async (req, res) => {
     const { make, model, year, price, category, description } = req.body;
 
@@ -105,8 +112,12 @@ const getAllVehiclesList = async (req, res) => {
     res.render('vehicles', { title: 'Inventory', vehicles: vehicles, categories: categories });
 }
 
+
+
+router.get('/edit/:id', getVehicleEditForm);
 router.get('/:id', getVehicle);
 router.post('/', upload.single('image'), createNewVehicle);
+router.post('/:id', upload.single('image'), updateVehicle);
 router.put('/:id', upload.single('image'), updateVehicle);
 router.delete('/:id', deleteVehicleById);
 router.get('/', getAllVehiclesList);
@@ -126,11 +137,15 @@ router.put('/:vehicleId/reviews/:reviewId', async (req, res) => {
 
     //res.status(200).json({ message: 'Review updated successfully', review: updatedReview });
 });
-/*
-router.get('/:vehicleId/reviews', async (req, res) => {
-    const { vehicleId } = req.params;
-    const reviews = await getReviewsByVehicleId(vehicleId);
-    res.status(200).json(reviews);
-});*/
+
+router.delete('/:vehicleId/reviews/:reviewId', async (req, res) => {
+    const { reviewId } = req.params;
+    const deletedReview = await deleteReview(reviewId);
+    res.redirect(`/vehicles/${req.params.vehicleId}`); // Redirect to the vehicle detail page after deleting the review
+    //res.status(200).json({ message: 'Review deleted successfully', review: deletedReview });
+});
+
+router.get('/vehicles/edit/:id', getVehicleEditForm);
+
 
 export default router;

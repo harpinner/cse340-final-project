@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <form action="/users/<%= user.id %>/password" method="POST">
+    <form action="/account/users/<%= user.id %>/password" method="POST">
       <input type="hidden" name="_method" value="PUT">
       <div class="field-grid">
         <div class="field">
@@ -117,17 +117,31 @@
       <tbody>
         <% serviceRequests.forEach(function(sr) { %>
           <tr>
-            <td><strong>#<%= sr.vehicle_id %></strong></td>
+
+            <% var theVehicle = vehicles.find(v => v.id === sr.vehicle_id); %>
+
+
+
+            <td><strong><%= theVehicle.make + ' ' + theVehicle.model + ' (' + theVehicle.year + ')' %></strong></td>
             <td><%= sr.service_type %></td>
             <td><span class="status-pill status-<%= sr.status %>"><%= sr.status %></span></td>
             <td class="row-notes"><%= sr.description || '—' %></td>
             <td><%= new Date(sr.created_at).toLocaleDateString() %></td>
             <td>
-              <%= sr.status %>
+              <form action="/account/service-requests/<%= sr.id %>/status" method="POST">
+                <div class="request-actions">
+                  <select class="status-select" name="newStatus" aria-label="Service request status">
+                    <option value="requested" <%= sr.status === 'requested' ? 'selected' : '' %>>Requested</option>
+                    <option value="in_progress" <%= sr.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                    <option value="completed" <%= sr.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                    <option value="cancelled" <%= sr.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+                  <button type="submit" class="delete-btn" style="border-color:var(--flag-blue); color:var(--flag-blue);">Update</button>
+                </div>
+              </form>
             </td>
             <td>
-              <form action="/service-requests/<%= sr.id %>" method="POST">
-                <input type="hidden" name="_method" value="DELETE">
+              <form action="/account/service-requests/<%= sr.id %>/delete" method="POST">
                 <button type="submit" class="delete-btn">Remove</button>
               </form>
             </td>
